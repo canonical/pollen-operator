@@ -1,0 +1,30 @@
+header:
+  license:
+    spdx-id: Apache-2.0
+    copyright-owner: Canonical Ltd.
+    content: |
+      Copyright [year] [owner]
+      See LICENSE file for licensing details.
+  paths:
+    - '**'
+  paths-ignore:
+    - '.github/**'
+    - '**/*.j2'
+    - '**/*.md'
+    - '**/*.txt'
+    - '.woke.yml'
+    - '.codespellignore'
+    - '.flake8'
+    - '.jujuignore'
+    - '.gitignore'
+    - '.licenserc.yaml'
+    - 'CODEOWNERS'
+    - 'icon.svg'
+    - 'LICENSE'
+    - 'content-cache_rock/nginx-logging-format.conf'
+    - 'lib/**'
+    - 'src/grafana_dashboards/content-cache.json'
+    - 'src/loki_alert_rules/.gitkeep'
+    - 'src/prometheus_alert_rules/content_cache_missing.rule'
+    - 'content-cache_rock/nginx_cfg.tmpl'
+  comment: on-failure

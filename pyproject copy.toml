@@ -1,0 +1,50 @@
+# Copyright 2023 Canonical Ltd.
+# See LICENSE file for licensing details.
+
+[tool.bandit]
+exclude_dirs = ["/venv/", "tests/integration/any_charm.py"]
+[tool.bandit.assert_used]
+skips = ["*/*test.py", "*/test_*.py"]
+
+# Testing tools configuration
+[tool.coverage.run]
+branch = true
+
+[tool.coverage.report]
+fail_under = 88
+show_missing = true
+
+
+[tool.pytest.ini_options]
+minversion = "6.0"
+log_cli_level = "INFO"
+
+# Formatting tools configuration
+[tool.black]
+line-length = 99
+target-version = ["py38"]
+
+[tool.isort]
+line_length = 99
+profile = "black"
+
+# Linting tools configuration
+[tool.flake8]
+max-line-length = 99
+max-doc-length = 99
+max-complexity = 10
+exclude = [".git", "__pycache__", ".tox", "build", "dist", "*.egg_info", "venv"]
+select = ["E", "W", "F", "C", "N", "R", "D", "H"]
+# Ignore W503, E501 because using black creates errors with this
+# Ignore D107 Missing docstring in __init__
+ignore = ["W503", "E501", "D107"]
+# D100, D101, D102, D103, D104: Ignore missing docstrings in tests
+# D205: Ignore 1 blank line required between summary line and description in tests
+# D212: Ignore multi-line docstring summary should start at the first line in tests
+# D415: Ignore first line should end with a period, question mark, or exclamation point in tests
+per-file-ignores = ["tests/*:D100,D101,D102,D103,D104,D205,D212,D415"]
+docstring-convention = "google"
+# Check for properly formatted copyright header in each file
+copyright-check = "True"
+copyright-author = "Canonical Ltd."
+copyright-regexp = "Copyright\\s\\d{4}([-,]\\d{4})*\\s+%(author)s"

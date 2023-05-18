@@ -1,0 +1,10 @@
+*~
+*.charm
+*.py[cod]
+*.swp
+.coverage
+.tox/
+build/
+htmlcov/
+__pycache__/
+*.rock

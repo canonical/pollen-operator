@@ -1,0 +1,6 @@
+# Copyright 2023 Canonical Ltd.
+# See LICENSE file for licensing details.
+exit-code: 0
+timeout: 20m
+scan:
+  offline-scan: true

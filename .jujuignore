@@ -1,0 +1,15 @@
+/venv/
+*~
+*.charm
+*.py[cod]
+*.swp
+.coverage
+.gitignore
+.tox/
+Makefile
+build/
+htmlcov/
+requirements.txt
+tox.ini
+tests/
+__pycache__/
