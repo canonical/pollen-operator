@@ -1,4 +1,4 @@
-# entropy-operator
+# Pollen
 
 Charmhub package name: operator-template
 More information: https://charmhub.io/entropy-operator
