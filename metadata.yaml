@@ -1,7 +1,7 @@
 # Copyright 2023 Canonical Ltd.
 # See LICENSE file for licensing details.
 
-name: entropy-operator
+name: pollen
 display-name: Charm Template
 summary: A very short one-line summary of the charm.
 
