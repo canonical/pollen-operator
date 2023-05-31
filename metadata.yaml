@@ -2,22 +2,13 @@
 # See LICENSE file for licensing details.
 
 name: pollen
-display-name: Charm Template
-summary: A very short one-line summary of the charm.
+summary: "Pollen Entropy-as-a-Service"
 
 description: |
-  A single sentence that says what the charm is, concisely and memorably.
+  Pollen is a fast, secure, Entropy-as-a-Service server.
 
-  A paragraph of one to three short sentences, that describe what the charm does.
-
-  A third paragraph that explains what need the charm meets.
-
-  Finally, a paragraph that describes whom the charm is useful for.
-containers:
-  httpbin:
-    resource: httpbin-image
-resources:
-  httpbin-image:
-    type: oci-image
-    description: OCI image for httpbin
-    upstream-source: kennethreitz/httpbin
+provides:
+  website:
+    interface: http
+  cos-agent:
+    interface: cos_agent
