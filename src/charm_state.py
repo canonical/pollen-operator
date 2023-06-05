@@ -3,7 +3,7 @@
 
 from typing import TypedDict
 
-from pydantic import BaseModel, Field, IPvAnyAddress, Extra
+from pydantic import BaseModel, Extra, Field, IPvAnyAddress
 
 
 class WebsiteDict(TypedDict):
@@ -40,5 +40,5 @@ class CharmState:
         Returns: a WebsiteDict object to be used by the website relation.
         """
         website_data = {"hostname": hostname, "port": 443}
-        websiteModel = WebsiteModel(**website_data)
-        return websiteModel
+        website_model = WebsiteModel(**website_data)
+        return website_model

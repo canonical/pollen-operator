@@ -37,7 +37,7 @@ class PollenOperatorCharm(ops.CharmBase):
         """
         super().__init__(*args)
         self.framework.observe(self.on.install, self._on_install)
-        #self.framework.observe(self.on.start, self._on_start)
+        self.framework.observe(self.on.start, self._on_start)
         self.framework.observe(self.on.stop, self._on_stop)
         self.framework.observe(self.on.website_relation_joined, self._on_website_relation_joined)
         self._grafana_agent = COSAgentProvider(
@@ -51,7 +51,7 @@ class PollenOperatorCharm(ops.CharmBase):
             log_slots=["pollen:logs"],
         )
 
-    def _on_website_relation_joined(self, event: ops.PebbleReadyEvent):
+    def _on_website_relation_joined(self, event: ops.RelationJoinedEvent):
         """Handle website-relation-joined.
 
         Args:
@@ -60,7 +60,7 @@ class PollenOperatorCharm(ops.CharmBase):
         hostname = self.model.get_binding("website").network.bind_address
         self.website = CharmState.website(hostname)
     
-    def _on_install(self, event: ops.PebbleReadyEvent):
+    def _on_install(self, event: ops.InstallEvent):
         """Handle install.
 
         Args:
@@ -69,24 +69,22 @@ class PollenOperatorCharm(ops.CharmBase):
         self.unit.status = MaintenanceStatus("Installing dependencies")
         pollen.prepare_pollen()
     
-    def _on_start(self, event: ops.PebbleReadyEvent):
+    def _on_start(self, event: ops.StartEvent):
         """Handle start.
 
         Args:
             event: Event triggering the start handler.
         """
-        check_call(['systemctl', 'restart', 'pollen.service'],
-            stdout=open(os.devnull,'wb'), stderr=STDOUT, shell=True)
+        pollen.start_pollen()
         self.unit.status = ActiveStatus("Ready")
 
-    def _on_stop(self, event: ops.PebbleReadyEvent):
+    def _on_stop(self, event: ops.StopEvent):
         """Handle stop.
 
         Args:
             event: Event triggering the stop handler.
         """
-        check_call(['systemctl', 'stop', 'pollen.service'],
-            stdout=open(os.devnull,'wb'), stderr=STDOUT, shell=True)
+        pollen.stop_pollen()
 
 if __name__ == "__main__":  # pragma: nocover
     ops.main(PollenOperatorCharm)
