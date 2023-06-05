@@ -44,7 +44,6 @@ def prepare_pollen() -> None:
             os.chmod('/etc/default/rng-tools-debian', 0o666)
             with open('/etc/default/rng-tools-debian', 'a') as file:
                 file.writelines([
-                    'HRNGDEVICE=/dev/urandom'
                     'RNGDOPTIONS="--fill-watermark=90% --feed-interval=1"'
                 ])
             check_call(['/etc/init.d/rng-tools-debian', 'restart'], stdout=open(os.devnull,'wb'), stderr=STDOUT)
