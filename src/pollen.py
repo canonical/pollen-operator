@@ -3,8 +3,9 @@
 
 import os
 import shutil
+import time
 from glob import glob
-from subprocess import STDOUT, check_call
+from subprocess import run
 
 from charms.operator_libs_linux.v0 import apt
 from charms.operator_libs_linux.v1 import systemd
@@ -22,6 +23,10 @@ def prepare_pollen() -> None:
     try:
         apt.update()
         apt.add_package(["pollen", "pollinate", "ent"])
+        # Apt-get makes the pollen restart error if we don't wait,
+        # even if apt-get executes correctly and there are no
+        # child processes left. The cause is unknown.
+        time.sleep(10)
     except:
         raise InstallError
     if not os.path.exists("/var/log/pollen"):
@@ -30,11 +35,9 @@ def prepare_pollen() -> None:
     try:
         os.chmod('/etc/apparmor.d/usr.bin.pollen', 0o666)
         shutil.copy("files/usr.bin.pollen", "/etc/apparmor.d/usr.bin.pollen")
-        systemd.service_reload('apparmor.service')
-        check_call(['rsync', 'files/logrotate.conf', '/etc/logrotate.d/pollen'],
-            stdout=open(os.devnull,'wb'), stderr=STDOUT)
-        check_call(['rsync', 'files/rsyslog.conf', '/etc/rsyslog.d/40-pollen.conf'],
-            stdout=open(os.devnull,'wb'), stderr=STDOUT)
+        systemd.service_restart('apparmor.service')
+        run(['rsync', 'files/logrotate.conf', '/etc/logrotate.d/pollen'])
+        run(['rsync', 'files/rsyslog.conf', '/etc/rsyslog.d/40-pollen.conf'])
         systemd.service_restart('rsyslog.service')
     except:
         raise ConfigurationWriteError
@@ -46,17 +49,17 @@ def prepare_pollen() -> None:
                 file.writelines([
                     'RNGDOPTIONS="--fill-watermark=90% --feed-interval=1"'
                 ])
-            check_call(['/etc/init.d/rng-tools-debian', 'restart'], stdout=open(os.devnull,'wb'), stderr=STDOUT)
+            run(['/etc/init.d/rng-tools-debian', 'restart'])
             systemd.service_restart('rngd.service')
         except:
             raise ConfigurationWriteError
 
 
 def start_pollen():
-        """Start the pollen service."""
-        systemd.service_restart('pollen.service')
+    """Start the pollen service."""
+    systemd.service_restart('pollen.service')
 
 
 def stop_pollen():
-        """Stop the pollen service."""
-        systemd.service_stop('pollen.service')
+    """Stop the pollen service."""
+    systemd.service_stop('pollen.service')

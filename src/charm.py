@@ -13,8 +13,6 @@ https://discourse.charmhub.io/t/4208
 """
 
 import logging
-import os
-from subprocess import STDOUT, check_call
 
 import ops
 from charms.grafana_agent.v0.cos_agent import COSAgentProvider
@@ -37,6 +35,7 @@ class PollenOperatorCharm(ops.CharmBase):
         """
         super().__init__(*args)
         self.framework.observe(self.on.install, self._on_install)
+        self.framework.observe(self.on.upgrade_charm, self._on_upgrade_charm)
         self.framework.observe(self.on.start, self._on_start)
         self.framework.observe(self.on.stop, self._on_stop)
         self.framework.observe(self.on.website_relation_joined, self._on_website_relation_joined)
@@ -68,6 +67,16 @@ class PollenOperatorCharm(ops.CharmBase):
         """
         self.unit.status = MaintenanceStatus("Installing dependencies")
         pollen.prepare_pollen()
+    
+    def _on_upgrade_charm(self, event: ops.UpgradeCharmEvent):
+        """Handle upgrade-charm.
+
+        Args:
+            event: Event triggering the upgrade-charm handler.
+        """
+        self.unit.status = MaintenanceStatus("Upgrading dependencies")
+        pollen.prepare_pollen()
+        self.unit.status = ActiveStatus("Ready")
     
     def _on_start(self, event: ops.StartEvent):
         """Handle start.
