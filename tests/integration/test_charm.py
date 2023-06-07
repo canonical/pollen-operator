@@ -1,34 +1,34 @@
-#!/usr/bin/env python3
 # Copyright 2023 Canonical Ltd.
 # See LICENSE file for licensing details.
 
-import asyncio
-import logging
-from pathlib import Path
+"""Integration test module."""
+
+import json
 
 import pytest
-import yaml
-from pytest_operator.plugin import OpsTest
+from ops.model import ActiveStatus, Application
 
-logger = logging.getLogger(__name__)
+ANY_APP_NAME = "any-app"
 
-METADATA = yaml.safe_load(Path("./metadata.yaml").read_text())
-APP_NAME = METADATA["name"]
-
-
+@pytest.mark.asyncio
 @pytest.mark.abort_on_fail
-async def test_build_and_deploy(ops_test: OpsTest):
-    """Build the charm-under-test and deploy it together with related charms.
-
-    Assert on the unit status before any relations/configurations take place.
+async def test_active(app: Application):
     """
-    # Build and deploy charm from local source folder
-    charm = await ops_test.build_charm(".")
+    arrange: given charm has been built, deployed and related to a dependent application
+    act: when the status is checked
+    assert: then the workload status is active.
+    """
+    assert app.units[0].workload_status == ActiveStatus.name
 
-    # Deploy the charm and wait for active/idle status
-    await asyncio.gather(
-        ops_test.model.deploy(charm, application_name=APP_NAME),
-        ops_test.model.wait_for_idle(
-            apps=[APP_NAME], status="active", raise_on_blocked=True, timeout=1000
-        ),
-    )
+@pytest.mark.asyncio
+async def test_website_relation(app: Application, run_action):
+    """
+    arrange: given charm has been built and deployed,
+    act: update the additional-hostnames option in the nginx-route relation using any-charm.
+    assert: HTTP request with the additional-hostnames value as the host header should be
+        forwarded to the application correctly. And the additional-hostnames should exist
+        in the nginx-route relation data.
+    """
+    action_result = await run_action(ANY_APP_NAME, "get-relation-data")
+    relation_data = json.loads(action_result["relation-data"])[0]
+    assert "hostname" and "port" in relation_data["application_data"]['pollen']

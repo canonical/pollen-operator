@@ -13,7 +13,7 @@ from charms.operator_libs_linux.v1 import systemd
 from exceptions import ConfigurationWriteError, InstallError
 
 
-def prepare_pollen() -> None:
+def prepare() -> None:
     """Install packages and write configuration files
 
     Raises:
@@ -55,11 +55,11 @@ def prepare_pollen() -> None:
             raise ConfigurationWriteError
 
 
-def start_pollen():
+def start():
     """Start the pollen service."""
     systemd.service_restart('pollen.service')
 
 
-def stop_pollen():
+def stop():
     """Stop the pollen service."""
     systemd.service_stop('pollen.service')
