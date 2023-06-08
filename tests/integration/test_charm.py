@@ -10,6 +10,7 @@ from ops.model import ActiveStatus, Application
 
 ANY_APP_NAME = "any-app"
 
+
 @pytest.mark.asyncio
 @pytest.mark.abort_on_fail
 async def test_active(app: Application):
@@ -19,6 +20,7 @@ async def test_active(app: Application):
     assert: then the workload status is active.
     """
     assert app.units[0].workload_status == ActiveStatus.name
+
 
 @pytest.mark.asyncio
 async def test_website_relation(app: Application, run_action):
@@ -31,4 +33,4 @@ async def test_website_relation(app: Application, run_action):
     """
     action_result = await run_action(ANY_APP_NAME, "get-relation-data")
     relation_data = json.loads(action_result["relation-data"])[0]
-    assert "hostname" and "port" in relation_data["application_data"]['pollen']
+    assert "hostname" and "port" in relation_data["application_data"]["pollen"]

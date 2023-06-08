@@ -12,9 +12,10 @@ from charm import EntropyOperatorCharm
 
 
 class TestCharm(unittest.TestCase):
+    """Test class for unit testing."""
+
     def setUp(self):
+        """Initialize the class."""
         self.harness = ops.testing.Harness(EntropyOperatorCharm)
         self.addCleanup(self.harness.cleanup)
         self.harness.begin()
-
-

@@ -24,12 +24,13 @@ from charm_state import CharmState
 # Log messages can be retrieved using juju debug-log
 logger = logging.getLogger(__name__)
 
+
 class PollenOperatorCharm(ops.CharmBase):
     """Charm the service."""
 
     def __init__(self, *args):
         """Construct.
-        
+
         Args:
             args: Arguments from the parent CharmBase constructor.
         """
@@ -49,6 +50,7 @@ class PollenOperatorCharm(ops.CharmBase):
             dashboard_dirs=["./src/grafana_dashboards"],
             log_slots=["pollen:logs"],
         )
+        self._charm_state = None
 
     def _on_website_relation_changed(self, event: ops.RelationChangedEvent):
         """Handle website-relation-changed.
@@ -57,12 +59,12 @@ class PollenOperatorCharm(ops.CharmBase):
             event: Event triggering the website relation joined handler.
         """
         hostname = self.model.get_binding("website").network.bind_address
-        self._charm_state = CharmState.from_charm(self, hostname)
+        self._charm_state = CharmState.from_charm(hostname)
         # If we're the current leader
         if self.unit.is_leader():
             # Set a field in the application data bucket
             event.relation.data[self.app].update(self._charm_state.website)
-    
+
     def _on_install(self, event: ops.InstallEvent):
         """Handle install.
 
@@ -71,7 +73,7 @@ class PollenOperatorCharm(ops.CharmBase):
         """
         self.unit.status = MaintenanceStatus("Installing dependencies")
         pollen.prepare()
-    
+
     def _on_upgrade_charm(self, event: ops.UpgradeCharmEvent):
         """Handle upgrade-charm.
 
@@ -81,7 +83,7 @@ class PollenOperatorCharm(ops.CharmBase):
         self.unit.status = MaintenanceStatus("Upgrading dependencies")
         pollen.prepare()
         self.unit.status = ActiveStatus("Ready")
-    
+
     def _on_start(self, event: ops.StartEvent):
         """Handle start.
 
@@ -98,6 +100,7 @@ class PollenOperatorCharm(ops.CharmBase):
             event: Event triggering the stop handler.
         """
         pollen.stop()
+
 
 if __name__ == "__main__":  # pragma: nocover
     ops.main(PollenOperatorCharm)

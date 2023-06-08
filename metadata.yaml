@@ -2,7 +2,13 @@
 # See LICENSE file for licensing details.
 
 name: pollen
+display-name: Pollen
 summary: "Pollen Entropy-as-a-Service"
+maintainers:
+  - launchpad.net/~canonical-is-devops
+issues: https://github.com/canonical/pollen-operator/issues
+source: https://github.com/canonical/pollen-operator
+docs: Yet to be published.
 
 description: |
   Pollen is a fast, secure, Entropy-as-a-Service server.

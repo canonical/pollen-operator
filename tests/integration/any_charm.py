@@ -12,11 +12,7 @@ from any_charm_base import AnyCharmBase
 
 
 class AnyCharm(AnyCharmBase):
-    """Execute a simple web-server charm to test the website relation.
-
-    Attrs:
-        website: The attribute that mimics a real website relation.
-    """
+    """Execute a simple web-server charm to test the website relation."""
 
     def __init__(self, *args, **kwargs):
         """Init function for the class.
@@ -26,7 +22,6 @@ class AnyCharm(AnyCharmBase):
             kwargs: Variable list of positional keyword arguments passed to the parent constructor.
         """
         super().__init__(*args, **kwargs)
-
 
     @staticmethod
     def start_server(port: int = 80):

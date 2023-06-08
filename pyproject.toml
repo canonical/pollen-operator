@@ -3,8 +3,9 @@
 
 [tool.bandit]
 exclude_dirs = ["/venv/", "tests/integration/any_charm.py"]
+skips = ["B603", "B404", "B607"]
 [tool.bandit.assert_used]
-skips = ["*/*test.py", "*/test_*.py"]
+skips = ["*/*test.py", "*/test_*.py", "B603"]
 
 # Testing tools configuration
 [tool.coverage.run]

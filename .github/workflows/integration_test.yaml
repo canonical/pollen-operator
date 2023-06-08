@@ -9,3 +9,4 @@ jobs:
     secrets: inherit
     with:
       trivy-image-config: "trivy.yaml"
+      provider: lxd

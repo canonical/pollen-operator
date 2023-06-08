@@ -47,6 +47,7 @@ def run_action(ops_test: OpsTest) -> Callable[[str, str], Awaitable[Any]]:
 
     return _run_action
 
+
 @pytest_asyncio.fixture(scope="module")
 async def app(
     ops_test: OpsTest,
