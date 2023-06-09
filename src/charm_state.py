@@ -2,21 +2,9 @@
 # See LICENSE file for licensing details.
 """Module that handles Pollen charm's state."""
 
-from typing import TypedDict
-
 from pydantic import BaseModel, Extra
 
-
-class WebsiteDict(TypedDict):
-    """Custom dict for the website property.
-
-    Attrs:
-        hostname: Website hostname.
-        port: Website port.
-    """
-
-    hostname: str
-    port: str
+HTTP_PORT = "443"
 
 
 class WebsiteModel(BaseModel, extra=Extra.forbid):
@@ -47,23 +35,23 @@ class CharmState:
         self._hostname = hostname
 
     @property
-    def website(self) -> WebsiteDict:
+    def website(self) -> WebsiteModel:
         """The state for this application of the website.
 
         Returns: a WebsiteDict object to be used by the website relation.
         """
-        website_data = {"hostname": format(self._hostname), "port": "443"}
+        website_data = {"hostname": format(self._hostname), "port": HTTP_PORT}
         website_model = WebsiteModel(**website_data)
         return website_model
 
     @classmethod
-    def from_charm(cls, hostname) -> "CharmState":
+    def from_charm(cls, charm) -> "CharmState":
         """Initialize a new instance of the CharmState class from the associated charm.
 
         Args:
-            hostname: the hostname to be used by the website property.
+            charm: PollenOperator charm.
 
         Return:
             The CharmState instance created by the provided charm.
         """
-        return cls(hostname=hostname)
+        return cls(hostname=charm.hostname)

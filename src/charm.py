@@ -18,8 +18,8 @@ import ops
 from charms.grafana_agent.v0.cos_agent import COSAgentProvider
 from ops.model import ActiveStatus, MaintenanceStatus
 
-import pollen
-from charm_state import CharmState
+from charm_state import HTTP_PORT, CharmState
+from pollen import PollenService
 
 # Log messages can be retrieved using juju debug-log
 logger = logging.getLogger(__name__)
@@ -43,14 +43,16 @@ class PollenOperatorCharm(ops.CharmBase):
         self._grafana_agent = COSAgentProvider(
             self,
             metrics_endpoints=[
-                {"path": "/metrics", "port": 443},
+                {"path": "/metrics", "port": HTTP_PORT},
             ],
             metrics_rules_dir="./src/prometheus_alert_rules",
             logs_rules_dir="./src/loki_alert_rules",
             dashboard_dirs=["./src/grafana_dashboards"],
             log_slots=["pollen:logs"],
         )
-        self._charm_state = None
+        self.pollen = PollenService()
+        self.hostname = self.model.get_binding("website").network.bind_address
+        self._charm_state = CharmState.from_charm(self)
 
     def _on_website_relation_changed(self, event: ops.RelationChangedEvent):
         """Handle website-relation-changed.
@@ -58,12 +60,7 @@ class PollenOperatorCharm(ops.CharmBase):
         Args:
             event: Event triggering the website relation joined handler.
         """
-        hostname = self.model.get_binding("website").network.bind_address
-        self._charm_state = CharmState.from_charm(hostname)
-        # If we're the current leader
-        if self.unit.is_leader():
-            # Set a field in the application data bucket
-            event.relation.data[self.app].update(self._charm_state.website)
+        event.relation.data[self.app].update(self._charm_state.website)
 
     def _on_install(self, event: ops.InstallEvent):
         """Handle install.
@@ -72,7 +69,7 @@ class PollenOperatorCharm(ops.CharmBase):
             event: Event triggering the install handler.
         """
         self.unit.status = MaintenanceStatus("Installing dependencies")
-        pollen.prepare()
+        self.pollen.prepare()
 
     def _on_upgrade_charm(self, event: ops.UpgradeCharmEvent):
         """Handle upgrade-charm.
@@ -81,8 +78,8 @@ class PollenOperatorCharm(ops.CharmBase):
             event: Event triggering the upgrade-charm handler.
         """
         self.unit.status = MaintenanceStatus("Upgrading dependencies")
-        pollen.prepare()
-        self.unit.status = ActiveStatus("Ready")
+        self.pollen.prepare()
+        self.unit.status = ActiveStatus()
 
     def _on_start(self, event: ops.StartEvent):
         """Handle start.
@@ -90,8 +87,8 @@ class PollenOperatorCharm(ops.CharmBase):
         Args:
             event: Event triggering the start handler.
         """
-        pollen.start()
-        self.unit.status = ActiveStatus("Ready")
+        self.pollen.start()
+        self.unit.status = ActiveStatus()
 
     def _on_stop(self, event: ops.StopEvent):
         """Handle stop.
@@ -99,7 +96,7 @@ class PollenOperatorCharm(ops.CharmBase):
         Args:
             event: Event triggering the stop handler.
         """
-        pollen.stop()
+        self.pollen.stop()
 
 
 if __name__ == "__main__":  # pragma: nocover
