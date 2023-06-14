@@ -2,7 +2,19 @@ header:
   - license:
       copyright-owner: Canonical Ltd.
       content: |
-        Copyright (C) 2014 [owner]
+        # vim:syntax=apparmor
+        # Created for Ubuntu by: Dustin Kirkland <kirkland@ubuntu.com>
+        # ------------------------------------------------------------------
+        #
+        #    Copyright (C) 2014 Dustin Kirkland
+        #    Copyright (C) 2014 Canonical Ltd.
+        #    See LICENSE file for licensing details.
+        #
+        #    This program is free software; you can redistribute it and/or
+        #    modify it under the terms of version 3 of the GNU General Public
+        #    License published by the Free Software Foundation.
+        #
+        # ------------------------------------------------------------------
     paths:
     - 'files/usr.bin.pollen'
     comment: on-failure
