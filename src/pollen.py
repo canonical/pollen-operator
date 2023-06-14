@@ -46,7 +46,7 @@ class PollenService:
             subprocess.run(
                 [
                     "rsync",
-                    "/var/lib/juju/agents/unit-pollen-*/charm/files/logrotate.conf",
+                    "files/logrotate.conf",
                     "/etc/logrotate.d/pollen",
                 ],
                 check=True,
@@ -54,7 +54,7 @@ class PollenService:
             subprocess.run(
                 [
                     "rsync",
-                    "/var/lib/juju/agents/unit-pollen-*/charm/files/rsyslog.conf",
+                    "files/rsyslog.conf",
                     "/etc/rsyslog.d/40-pollen.conf",
                 ],
                 check=True,
