@@ -5,6 +5,12 @@ header:
     content: |
       Copyright [year] [owner]
       See LICENSE file for licensing details.
+  license:
+    spdx-id: Apache-2.0
+    copyright-owner: Canonical Ltd.
+    content: |
+      Copyright (C) 2014 [owner]
+      See LICENSE file for licensing details.
   paths:
     - '**'
   paths-ignore:
@@ -23,7 +29,6 @@ header:
     - 'LICENSE'
     - 'lib/**'
     - 'src/loki_alert_rules/.gitkeep'
-    - 'content-cache_rock/nginx_cfg.tmpl'
     - 'src/grafana_dashboards/.gitkeep'
     - 'src/prometheus_alert_rules/pollen_missing.rule'
   comment: on-failure

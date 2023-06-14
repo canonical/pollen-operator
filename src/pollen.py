@@ -3,11 +3,11 @@
 
 """Pollen charm business logic."""
 
+import glob
 import os
 import shutil
+import subprocess
 import time
-from glob import glob
-from subprocess import run
 
 from charms.operator_libs_linux.v0 import apt
 from charms.operator_libs_linux.v1 import systemd
@@ -43,14 +43,18 @@ class PollenService:
         try:
             shutil.copy("files/usr.bin.pollen", "/etc/apparmor.d/usr.bin.pollen")
             systemd.service_reload("apparmor.service")
-            run(["rsync", "files/logrotate.conf", "/etc/logrotate.d/pollen"], check=True)
-            run(["rsync", "files/rsyslog.conf", "/etc/rsyslog.d/40-pollen.conf"], check=True)
+            subprocess.run(
+                ["rsync", "files/logrotate.conf", "/etc/logrotate.d/pollen"], check=True
+            )
+            subprocess.run(
+                ["rsync", "files/rsyslog.conf", "/etc/rsyslog.d/40-pollen.conf"], check=True
+            )
             systemd.service_restart("rsyslog.service")
         except FileNotFoundError as exc:
             raise ConfigurationWriteError from exc
         except systemd.SystemdError as exc:
             raise ConfigurationWriteError from exc
-        if glob("/dev/tpm*") or os.path.exists("/dev/hwrng"):
+        if glob.glob("/dev/tpm*") or os.path.exists("/dev/hwrng"):
             try:
                 apt.add_package("rng-tools5")
                 with open("/etc/default/rng-tools-debian", "a", encoding="utf-8") as file:

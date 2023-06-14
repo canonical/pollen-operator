@@ -33,4 +33,4 @@ async def test_website_relation(app: Application, run_action):
     """
     action_result = await run_action(ANY_APP_NAME, "get-relation-data")
     relation_data = json.loads(action_result["relation-data"])[0]
-    assert "hostname" and "port" in relation_data["application_data"]["pollen"]
+    assert "hostname" and "port" in relation_data["unit_data"]["pollen/0"]

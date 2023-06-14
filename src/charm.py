@@ -60,7 +60,7 @@ class PollenOperatorCharm(ops.CharmBase):
         Args:
             event: Event triggering the website relation joined handler.
         """
-        event.relation.data[self.app].update(self._charm_state.website)
+        event.relation.data[self.unit].update(self._charm_state.website)
 
     def _on_install(self, event: ops.InstallEvent):
         """Handle install.

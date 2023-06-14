@@ -26,7 +26,7 @@ class CharmState:
         website: Website to pass over the website relation
     """
 
-    def __init__(self, hostname: str | None) -> None:
+    def __init__(self, hostname: str) -> None:
         """Construct.
 
         Args:
