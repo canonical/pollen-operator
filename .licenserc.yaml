@@ -3,7 +3,6 @@ header:
       copyright-owner: Canonical Ltd.
       content: |
         Copyright (C) 2014 [owner]
-        See LICENSE file for licensing details.
     paths:
     - 'files/usr.bin.pollen'
     comment: on-failure

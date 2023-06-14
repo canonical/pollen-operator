@@ -57,13 +57,7 @@ class PollenService:
         if glob.glob("/dev/tpm*") or os.path.exists("/dev/hwrng"):
             try:
                 apt.add_package("rng-tools5")
-                file_modified = False
-                with open("/etc/default/rng-tools-debian", "r", encoding="utf-8") as file:
-                    if file.read().count('RNGDOPTIONS="--fill-watermark=90% --feed-interval=1"') > 1:
-                        file_modified = True
-                if not file_modified:
-                    with open("/etc/default/rng-tools-debian", "a", encoding="utf-8") as file:
-                        file.writelines(['RNGDOPTIONS="--fill-watermark=90% --feed-interval=1"'])
+                cls.check_rng_file()
                 systemd.service_restart("rngd.service")
             except FileNotFoundError as exc:
                 raise ConfigurationWriteError from exc
@@ -77,3 +71,14 @@ class PollenService:
     def stop(cls):
         """Stop the pollen service."""
         systemd.service_stop(POLLEN_SERVICE_NAME)
+
+    @classmethod
+    def check_rng_file(cls):
+        """Check if the rng-tools-debian file needs modification."""
+        file_modified = False
+        with open("/etc/default/rng-tools-debian", "r", encoding="utf-8") as file:
+            if file.read().count('RNGDOPTIONS="--fill-watermark=90% --feed-interval=1"') > 1:
+                file_modified = True
+        if not file_modified:
+            with open("/etc/default/rng-tools-debian", "a", encoding="utf-8") as file:
+                file.writelines(['RNGDOPTIONS="--fill-watermark=90% --feed-interval=1"'])

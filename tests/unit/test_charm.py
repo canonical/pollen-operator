@@ -42,7 +42,10 @@ class TestCharm(unittest.TestCase):
         start_mock.assert_called_with("pollen.service")
 
     @mock.patch("glob.glob")
-    @mock.patch("builtins.open")
+    @mock.patch(
+        "builtins.open",
+        mock.mock_open(read_data='RNGDOPTIONS="--fill-watermark=90% --feed-interval=1"'),
+    )
     @mock.patch("charms.operator_libs_linux.v1.systemd.service_restart")
     @mock.patch("charms.operator_libs_linux.v1.systemd.service_reload")
     @mock.patch("subprocess.run")
@@ -63,7 +66,6 @@ class TestCharm(unittest.TestCase):
         run_mock,
         service_reload_mock,
         service_restart_mock,
-        open_mock,
         glob_mock,
     ):
         glob_mock.return_value = None
