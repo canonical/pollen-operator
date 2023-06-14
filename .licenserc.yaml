@@ -1,37 +1,35 @@
 header:
-
-  license:
-    copyright-owner: Canonical Ltd.
-    content: |
-      Copyright (C) 2014 [owner]
-      See LICENSE file for licensing details.
-  paths:
+  - license:
+      copyright-owner: Canonical Ltd.
+      content: |
+        Copyright (C) 2014 [owner]
+        See LICENSE file for licensing details.
+    paths:
     - 'files/usr.bin.pollen'
-  comment:
-    on-failure
-  license:
-    spdx-id: Apache-2.0
-    copyright-owner: Canonical Ltd.
-    content: |
-      Copyright [year] [owner]
-      See LICENSE file for licensing details.
-  paths:
-    - '**'
-  paths-ignore:
-    - '.github/**'
-    - '**/*.j2'
-    - '**/*.md'
-    - '**/*.txt'
-    - '.woke.yml'
-    - '.codespellignore'
-    - '.flake8'
-    - '.jujuignore'
-    - '.gitignore'
-    - '.licenserc.yaml'
-    - 'CODEOWNERS'
-    - 'icon.svg'
-    - 'LICENSE'
-    - 'lib/**'
-    - '**/.gitkeep'
-    - 'src/prometheus_alert_rules/pollen_missing.rule'
-  comment: on-failure
+    comment: on-failure
+  - license:
+      spdx-id: Apache-2.0
+      copyright-owner: Canonical Ltd.
+      content: |
+        Copyright [year] [owner]
+        See LICENSE file for licensing details.
+    paths:
+      - '**'
+    paths-ignore:
+      - '.github/**'
+      - '**/*.j2'
+      - '**/*.md'
+      - '**/*.txt'
+      - '.woke.yml'
+      - '.codespellignore'
+      - '.flake8'
+      - '.jujuignore'
+      - '.gitignore'
+      - '.licenserc.yaml'
+      - 'CODEOWNERS'
+      - 'icon.svg'
+      - 'LICENSE'
+      - 'lib/**'
+      - '**/.gitkeep'
+      - 'src/prometheus_alert_rules/pollen_missing.rule'
+    comment: on-failure
