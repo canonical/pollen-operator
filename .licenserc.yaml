@@ -1,15 +1,19 @@
 header:
+
+  license:
+    copyright-owner: Canonical Ltd.
+    content: |
+      Copyright (C) 2014 [owner]
+      See LICENSE file for licensing details.
+  paths:
+    - 'files/usr.bin.pollen'
+  comment:
+    on-failure
   license:
     spdx-id: Apache-2.0
     copyright-owner: Canonical Ltd.
     content: |
       Copyright [year] [owner]
-      See LICENSE file for licensing details.
-  license:
-    spdx-id: Apache-2.0
-    copyright-owner: Canonical Ltd.
-    content: |
-      Copyright (C) 2014 [owner]
       See LICENSE file for licensing details.
   paths:
     - '**'
@@ -28,7 +32,6 @@ header:
     - 'icon.svg'
     - 'LICENSE'
     - 'lib/**'
-    - 'src/loki_alert_rules/.gitkeep'
-    - 'src/grafana_dashboards/.gitkeep'
+    - '**/.gitkeep'
     - 'src/prometheus_alert_rules/pollen_missing.rule'
   comment: on-failure

@@ -57,8 +57,13 @@ class PollenService:
         if glob.glob("/dev/tpm*") or os.path.exists("/dev/hwrng"):
             try:
                 apt.add_package("rng-tools5")
-                with open("/etc/default/rng-tools-debian", "a", encoding="utf-8") as file:
-                    file.writelines(['RNGDOPTIONS="--fill-watermark=90% --feed-interval=1"'])
+                file_modified = False
+                with open("/etc/default/rng-tools-debian", "r", encoding="utf-8") as file:
+                    if file.read().count('RNGDOPTIONS="--fill-watermark=90% --feed-interval=1"') > 1:
+                        file_modified = True
+                if not file_modified:
+                    with open("/etc/default/rng-tools-debian", "a", encoding="utf-8") as file:
+                        file.writelines(['RNGDOPTIONS="--fill-watermark=90% --feed-interval=1"'])
                 systemd.service_restart("rngd.service")
             except FileNotFoundError as exc:
                 raise ConfigurationWriteError from exc
