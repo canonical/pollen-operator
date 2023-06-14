@@ -44,10 +44,20 @@ class PollenService:
             shutil.copy("files/usr.bin.pollen", "/etc/apparmor.d/usr.bin.pollen")
             systemd.service_reload("apparmor.service")
             subprocess.run(
-                ["rsync", "files/logrotate.conf", "/etc/logrotate.d/pollen"], check=True
+                [
+                    "rsync",
+                    "/var/lib/juju/agents/unit-pollen-*/charm/files/logrotate.conf",
+                    "/etc/logrotate.d/pollen",
+                ],
+                check=True,
             )
             subprocess.run(
-                ["rsync", "files/rsyslog.conf", "/etc/rsyslog.d/40-pollen.conf"], check=True
+                [
+                    "rsync",
+                    "/var/lib/juju/agents/unit-pollen-*/charm/files/rsyslog.conf",
+                    "/etc/rsyslog.d/40-pollen.conf",
+                ],
+                check=True,
             )
             systemd.service_restart("rsyslog.service")
         except FileNotFoundError as exc:
