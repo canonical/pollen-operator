@@ -1,3 +1,9 @@
+# Pollen Operator
+
+A Juju charm for deploying and managing a Pollen server.
+
+## Overview
+
 A Juju charm deploying Pollen on a machine. Pollen is a scalable,
 high performance, free software (AGPL) web server, that provides small
 strings of entropy, over TLS-encrypted HTTPS or clear text HTTP connections.
