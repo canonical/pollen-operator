@@ -1,6 +1,5 @@
 # Copyright 2023 Canonical Ltd.
 # See LICENSE file for licensing details.
-# This comment will go away, it is just for testing purposes
 
 """Pollen charm business logic."""
 
