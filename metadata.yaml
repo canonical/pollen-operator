@@ -8,7 +8,7 @@ maintainers:
   - launchpad.net/~canonical-is-devops
 issues: https://github.com/canonical/pollen-operator/issues
 source: https://github.com/canonical/pollen-operator
-docs: ""
+docs: "https://discourse.charmhub.io/t/pollen-documentation-overview/10915"
 
 description: |
   Pollen is a fast, secure, Entropy-as-a-Service server.
