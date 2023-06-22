@@ -4,7 +4,6 @@
 """Pollen charm business logic."""
 
 import glob
-import os
 import subprocess
 from pathlib import Path
 
