@@ -62,7 +62,7 @@ class TestCharm(unittest.TestCase):
     ):
         glob_mock.return_value = None
         os_path_mock.return_value = True
-        PollenService.prepare()
+        PollenService.prepare("pollen-0")
         apt_update_mock.assert_called_once()
         apt_install_mock.has_calls(["pollinate", "ent"], "rng-tools-5")
         service_restart_mock.has_calls("rsyslog.service", "rngd.service")
@@ -87,7 +87,7 @@ class TestCharm(unittest.TestCase):
         glob_mock.return_value = None
         apt_install_mock.side_effect = [None, FileNotFoundError]
         with self.assertRaises(exceptions.ConfigurationWriteError):
-            PollenService.prepare()
+            PollenService.prepare("pollen-0")
 
     @mock.patch("glob.glob")
     @mock.patch("builtins.open")
@@ -110,7 +110,7 @@ class TestCharm(unittest.TestCase):
     ):
         glob_mock.return_value = None
         path_mock.return_value = False
-        PollenService.prepare()
+        PollenService.prepare("pollen-0")
         apt_update_mock.assert_called_once()
         apt_install_mock.assert_called_once_with(["pollinate", "ent"])
         service_restart_mock.assert_called_once_with("rsyslog.service")
@@ -124,7 +124,7 @@ class TestCharm(unittest.TestCase):
     ):
         apt_install_mock.side_effect = FileNotFoundError
         with self.assertRaises(exceptions.InstallError):
-            PollenService.prepare()
+            PollenService.prepare("pollen-0")
 
     @mock.patch("charms.operator_libs_linux.v1.systemd.service_restart")
     @mock.patch("subprocess.run")
@@ -139,10 +139,10 @@ class TestCharm(unittest.TestCase):
     ):
         service_restart_mock.side_effect = FileNotFoundError
         with self.assertRaises(exceptions.ConfigurationWriteError):
-            PollenService.prepare()
+            PollenService.prepare("pollen-0")
         service_restart_mock.side_effect = systemd.SystemdError
         with self.assertRaises(exceptions.ConfigurationWriteError):
-            PollenService.prepare()
+            PollenService.prepare("pollen-0")
 
     def test_charm_state_website_property(self):
         charm_state = CharmState("hostname")

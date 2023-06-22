@@ -54,4 +54,5 @@ class CharmState:
         Return:
             The CharmState instance created by the provided charm.
         """
-        return cls(hostname=charm.hostname)
+        hostname = charm.model.get_binding("website").network.bind_address
+        return cls(hostname)

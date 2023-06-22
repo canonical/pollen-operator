@@ -18,8 +18,11 @@ class PollenService:
     """Pollen service class."""
 
     @classmethod
-    def prepare(cls) -> None:
+    def prepare(cls, unit_name) -> None:
         """Install packages and write configuration files.
+
+        Args:
+            unit_name: ¨Pollen charm's unit name.
 
         Raises:
             InstallError: if the packages fail to install
@@ -35,7 +38,7 @@ class PollenService:
             subprocess.run(
                 [
                     "rsync",
-                    "files/logrotate.conf",
+                    f"/var/lib/juju/agents/unit-{unit_name}/charm/files/logrotate.conf",
                     "/etc/logrotate.d/pollen",
                 ],
                 check=True,
@@ -43,7 +46,7 @@ class PollenService:
             subprocess.run(
                 [
                     "rsync",
-                    "files/rsyslog.conf",
+                    f"/var/lib/juju/agents/unit-{unit_name}/charm/files/rsyslog.conf",
                     "/etc/rsyslog.d/40-pollen.conf",
                 ],
                 check=True,
