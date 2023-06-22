@@ -24,5 +24,4 @@ header:
       - 'lib/**'
       - '**/.gitkeep'
       - 'src/prometheus_alert_rules/pollen_missing.rule'
-      - 'files/usr.bin.pollen'
     comment: on-failure

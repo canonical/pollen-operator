@@ -6,6 +6,7 @@
 import glob
 import os
 import subprocess
+from pathlib import Path
 
 from charms.operator_libs_linux.v0 import apt
 from charms.operator_libs_linux.v1 import systemd
@@ -53,7 +54,7 @@ class PollenService:
             raise ConfigurationWriteError from exc
         except systemd.SystemdError as exc:
             raise ConfigurationWriteError from exc
-        if glob.glob("/dev/tpm*") or os.path.exists("/dev/hwrng"):
+        if glob.glob("/dev/tpm*") or Path("/dev/hwrng").exists():
             try:
                 apt.add_package("rng-tools5")
                 cls.check_rng_file()

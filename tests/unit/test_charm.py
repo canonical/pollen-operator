@@ -48,7 +48,7 @@ class TestCharm(unittest.TestCase):
     )
     @mock.patch("charms.operator_libs_linux.v1.systemd.service_restart")
     @mock.patch("subprocess.run")
-    @mock.patch("os.path.exists")
+    @mock.patch("pathlib.Path.exists")
     @mock.patch("charms.operator_libs_linux.v0.apt.add_package")
     @mock.patch("charms.operator_libs_linux.v0.apt.update")
     def test_pollen_prepare_extra_modules(
@@ -72,14 +72,12 @@ class TestCharm(unittest.TestCase):
     @mock.patch("charms.operator_libs_linux.v1.systemd.service_restart")
     @mock.patch("charms.operator_libs_linux.v2.snap.add")
     @mock.patch("subprocess.run")
-    @mock.patch("os.path.exists")
     @mock.patch("charms.operator_libs_linux.v0.apt.add_package")
     @mock.patch("charms.operator_libs_linux.v0.apt.update")
     def test_pollen_prepare_extra_modules_error(
         self,
         apt_update_mock,
         apt_install_mock,
-        os_path_mock,
         run_mock,
         snap_mock,
         service_restart_mock,
@@ -87,7 +85,6 @@ class TestCharm(unittest.TestCase):
         glob_mock,
     ):
         glob_mock.return_value = None
-        os_path_mock.return_value = True
         apt_install_mock.side_effect = [None, FileNotFoundError]
         with self.assertRaises(exceptions.ConfigurationWriteError):
             PollenService.prepare()
@@ -97,14 +94,14 @@ class TestCharm(unittest.TestCase):
     @mock.patch("charms.operator_libs_linux.v1.systemd.service_restart")
     @mock.patch("charms.operator_libs_linux.v2.snap.add")
     @mock.patch("subprocess.run")
-    @mock.patch("os.path.exists")
+    @mock.patch("pathlib.Path.exists")
     @mock.patch("charms.operator_libs_linux.v0.apt.add_package")
     @mock.patch("charms.operator_libs_linux.v0.apt.update")
     def test_pollen_prepare(
         self,
         apt_update_mock,
         apt_install_mock,
-        os_path_mock,
+        path_mock,
         run_mock,
         snap_mock,
         service_restart_mock,
@@ -112,7 +109,7 @@ class TestCharm(unittest.TestCase):
         glob_mock,
     ):
         glob_mock.return_value = None
-        os_path_mock.return_value = False
+        path_mock.return_value = False
         PollenService.prepare()
         apt_update_mock.assert_called_once()
         apt_install_mock.assert_called_once_with(["pollinate", "ent"])
@@ -131,14 +128,12 @@ class TestCharm(unittest.TestCase):
 
     @mock.patch("charms.operator_libs_linux.v1.systemd.service_restart")
     @mock.patch("subprocess.run")
-    @mock.patch("os.path.exists")
     @mock.patch("charms.operator_libs_linux.v0.apt.add_package")
     @mock.patch("charms.operator_libs_linux.v0.apt.update")
     def test_pollen_prepare_configuration_error(
         self,
         apt_update_mock,
         apt_install_mock,
-        os_path_mock,
         subprocess_mock,
         service_restart_mock,
     ):
