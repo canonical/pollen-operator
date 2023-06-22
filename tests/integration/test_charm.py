@@ -8,6 +8,8 @@ import json
 import pytest
 from ops.model import ActiveStatus, Application
 
+from charm import METRICS_PORT
+
 ANY_APP_NAME = "any-app"
 
 
@@ -34,3 +36,22 @@ async def test_website_relation(app: Application, run_action):
     action_result = await run_action(ANY_APP_NAME, "get-relation-data")
     relation_data = json.loads(action_result["relation-data"])[0]
     assert "hostname" and "port" in relation_data["unit_data"]["pollen/0"]
+
+
+@pytest.mark.asyncio
+@pytest.mark.abort_on_fail
+async def test_prom_metrics_are_up(app: Application):
+    """
+    arrange: given charm in its initial state
+    act: when the metrics endpoint is scraped
+    assert: the response is 200 (HTTP OK)
+    """
+    # Application actually does have units
+    pollen_unit = app.units[0]
+    # Send request to /metrics for each target and check the response
+    cmd = f"curl http://localhost:{METRICS_PORT}/metrics"
+    action = await pollen_unit.run(cmd)
+    code = action.results.get("Code")
+    stdout = action.results.get("Stdout")
+    stderr = action.results.get("Stderr")
+    assert code == "0", f"{cmd} failed ({code}): {stderr or stdout}"

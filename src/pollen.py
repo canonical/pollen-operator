@@ -5,16 +5,13 @@
 
 import glob
 import os
-import shutil
 import subprocess
-import time
 
 from charms.operator_libs_linux.v0 import apt
 from charms.operator_libs_linux.v1 import systemd
+from charms.operator_libs_linux.v2 import snap
 
 from exceptions import ConfigurationWriteError, InstallError
-
-POLLEN_SERVICE_NAME = "pollen.service"
 
 
 class PollenService:
@@ -30,19 +27,11 @@ class PollenService:
         """
         try:
             apt.update()
-            apt.add_package(["pollen", "pollinate", "ent"])
-            # Apt-get makes the pollen restart error if we don't wait,
-            # even if apt-get executes correctly and there are no
-            # child processes left. The cause is unknown.
-            time.sleep(10)
+            apt.add_package(["pollinate", "ent"])
+            snap.add("gtrkiller-pollen", channel="candidate")
         except FileNotFoundError as exc:
             raise InstallError from exc
-        if not os.path.exists("/var/log/pollen"):
-            os.mkdir("/var/log/pollen")
-            shutil.chown("/var/log/pollen", "syslog")
         try:
-            shutil.copy("files/usr.bin.pollen", "/etc/apparmor.d/usr.bin.pollen")
-            systemd.service_reload("apparmor.service")
             subprocess.run(
                 [
                     "rsync",
@@ -75,12 +64,16 @@ class PollenService:
     @classmethod
     def start(cls):
         """Start the pollen service."""
-        systemd.service_start(POLLEN_SERVICE_NAME)
+        cache = snap.SnapCache()
+        pollen = cache["gtrkiller-pollen"]
+        pollen.start()
 
     @classmethod
     def stop(cls):
         """Stop the pollen service."""
-        systemd.service_stop(POLLEN_SERVICE_NAME)
+        cache = snap.SnapCache()
+        pollen = cache["gtrkiller-pollen"]
+        pollen.stop()
 
     @classmethod
     def check_rng_file(cls):

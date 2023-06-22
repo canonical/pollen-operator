@@ -18,11 +18,13 @@ import ops
 from charms.grafana_agent.v0.cos_agent import COSAgentProvider
 from ops.model import ActiveStatus, MaintenanceStatus
 
-from charm_state import HTTP_PORT, CharmState
+from charm_state import CharmState
 from pollen import PollenService
 
 # Log messages can be retrieved using juju debug-log
 logger = logging.getLogger(__name__)
+
+METRICS_PORT = "2112"
 
 
 class PollenOperatorCharm(ops.CharmBase):
@@ -43,12 +45,10 @@ class PollenOperatorCharm(ops.CharmBase):
         self._grafana_agent = COSAgentProvider(
             self,
             metrics_endpoints=[
-                {"path": "/metrics", "port": HTTP_PORT},
+                {"path": "/metrics", "port": METRICS_PORT},
             ],
             metrics_rules_dir="./src/prometheus_alert_rules",
-            logs_rules_dir="./src/loki_alert_rules",
             dashboard_dirs=["./src/grafana_dashboards"],
-            log_slots=["pollen:logs"],
         )
         self.pollen = PollenService()
         self.hostname = self.model.get_binding("website").network.bind_address
