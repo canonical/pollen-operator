@@ -13,6 +13,8 @@ from charms.operator_libs_linux.v2 import snap
 
 from exceptions import ConfigurationWriteError, InstallError
 
+SNAP_NAME = "gtrkiller-pollen"
+
 
 class PollenService:
     """Pollen service class."""
@@ -31,7 +33,7 @@ class PollenService:
         try:
             apt.update()
             apt.add_package(["pollinate", "ent"])
-            snap.add("gtrkiller-pollen", channel="candidate")
+            snap.add(SNAP_NAME, channel="candidate")
         except FileNotFoundError as exc:
             raise InstallError from exc
         try:
@@ -68,14 +70,14 @@ class PollenService:
     def start(cls):
         """Start the pollen service."""
         cache = snap.SnapCache()
-        pollen = cache["gtrkiller-pollen"]
+        pollen = cache[SNAP_NAME]
         pollen.start()
 
     @classmethod
     def stop(cls):
         """Stop the pollen service."""
         cache = snap.SnapCache()
-        pollen = cache["gtrkiller-pollen"]
+        pollen = cache[SNAP_NAME]
         pollen.stop()
 
     @classmethod
