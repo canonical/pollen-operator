@@ -30,17 +30,16 @@ class TestCharm(unittest.TestCase):
         self.harness = ops.testing.Harness(PollenOperatorCharm)
         self.addCleanup(self.harness.cleanup)
         self.harness.begin()
+        self.pollen = PollenService()
 
     @mock.patch("charms.operator_libs_linux.v2.snap.Snap.start")
     def test_pollen_start(self, start_mock):
-        pollen = PollenService()
-        pollen.start()
+        self.pollen.start()
         start_mock.assert_called_once()
 
     @mock.patch("charms.operator_libs_linux.v2.snap.Snap.stop")
     def test_pollen_stop(self, stop_mock):
-        pollen = PollenService()
-        pollen.stop()
+        self.pollen.stop()
         stop_mock.assert_called_once()
 
     @mock.patch("glob.glob")
@@ -65,8 +64,7 @@ class TestCharm(unittest.TestCase):
         glob_mock.return_value = None
         read_mock.return_value = 'RNGDOPTIONS="--fill-watermark=90% --feed-interval=1"'
         exists_path_mock.return_value = True
-        pollen = PollenService()
-        pollen.prepare("pollen-0")
+        self.pollen.prepare("pollen-0", CharmState("hostname"))
         apt_update_mock.assert_called_once()
         write_mock.assert_called_once()
         apt_install_mock.has_calls(["pollinate", "ent"], "rng-tools-5")
@@ -90,8 +88,7 @@ class TestCharm(unittest.TestCase):
         glob_mock.return_value = None
         apt_install_mock.side_effect = [None, FileNotFoundError]
         with self.assertRaises(exceptions.ConfigurationWriteError):
-            pollen = PollenService()
-            pollen.prepare("pollen-0")
+            self.pollen.prepare("pollen-0", CharmState("hostname"))
 
     @mock.patch("glob.glob")
     @mock.patch("charms.operator_libs_linux.v1.systemd.service_restart")
@@ -112,8 +109,7 @@ class TestCharm(unittest.TestCase):
     ):
         glob_mock.return_value = None
         path_mock.return_value = False
-        pollen = PollenService()
-        pollen.prepare("pollen-0")
+        self.pollen.prepare("pollen-0", CharmState("hostname"))
         apt_update_mock.assert_called_once()
         apt_install_mock.assert_called_once_with(["pollinate", "ent"])
         service_restart_mock.assert_called_once_with("rsyslog.service")
@@ -127,8 +123,7 @@ class TestCharm(unittest.TestCase):
     ):
         apt_install_mock.side_effect = FileNotFoundError
         with self.assertRaises(exceptions.InstallError):
-            pollen = PollenService()
-            pollen.prepare("pollen-0")
+            self.pollen.prepare("pollen-0", CharmState("hostname"))
 
     @mock.patch("charms.operator_libs_linux.v1.systemd.service_restart")
     @mock.patch("subprocess.run")
@@ -143,12 +138,10 @@ class TestCharm(unittest.TestCase):
     ):
         service_restart_mock.side_effect = FileNotFoundError
         with self.assertRaises(exceptions.ConfigurationWriteError):
-            pollen = PollenService()
-            pollen.prepare("pollen-0")
+            self.pollen.prepare("pollen-0", CharmState("hostname"))
         service_restart_mock.side_effect = systemd.SystemdError
         with self.assertRaises(exceptions.ConfigurationWriteError):
-            pollen = PollenService()
-            pollen.prepare("pollen-0")
+            self.pollen.prepare("pollen-0", CharmState("hostname"))
 
     def test_charm_state_website_property(self):
         charm_state = CharmState("hostname")

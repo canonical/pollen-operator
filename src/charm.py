@@ -69,7 +69,7 @@ class PollenOperatorCharm(ops.CharmBase):
             event: Event triggering the install handler.
         """
         self.unit.status = MaintenanceStatus("Installing dependencies")
-        self.pollen.prepare(str(self.unit.name).replace("/", "-"))
+        self.pollen.prepare(str(self.unit.name).replace("/", "-"), self._charm_state)
 
     def _on_upgrade_charm(self, event: ops.UpgradeCharmEvent):
         """Handle upgrade-charm.
@@ -78,7 +78,7 @@ class PollenOperatorCharm(ops.CharmBase):
             event: Event triggering the upgrade-charm handler.
         """
         self.unit.status = MaintenanceStatus("Upgrading dependencies")
-        self.pollen.prepare(str(self.unit.name).replace("/", "-"))
+        self.pollen.prepare(str(self.unit.name).replace("/", "-"), self._charm_state)
         self.unit.status = ActiveStatus()
 
     def _on_start(self, event: ops.StartEvent):
