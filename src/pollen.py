@@ -11,6 +11,7 @@ from charms.operator_libs_linux.v0 import apt
 from charms.operator_libs_linux.v1 import systemd
 from charms.operator_libs_linux.v2 import snap
 
+from charm_state import CharmState
 from exceptions import ConfigurationWriteError, InstallError
 
 SNAP_NAME = "gtrkiller-pollen"
@@ -19,8 +20,7 @@ SNAP_NAME = "gtrkiller-pollen"
 class PollenService:
     """Pollen service class."""
 
-    @classmethod
-    def prepare(cls, unit_name) -> None:
+    def prepare(self, unit_name) -> None:
         """Install packages and write configuration files.
 
         Args:
@@ -61,32 +61,19 @@ class PollenService:
         if glob.glob("/dev/tpm*") or Path("/dev/hwrng").exists():
             try:
                 apt.add_package("rng-tools5")
-                cls.check_rng_file()
+                CharmState.check_rng_file()
                 systemd.service_restart("rngd.service")
             except FileNotFoundError as exc:
                 raise ConfigurationWriteError from exc
 
-    @classmethod
-    def start(cls):
+    def start(self):
         """Start the pollen service."""
         cache = snap.SnapCache()
         pollen = cache[SNAP_NAME]
         pollen.start()
 
-    @classmethod
-    def stop(cls):
+    def stop(self):
         """Stop the pollen service."""
         cache = snap.SnapCache()
         pollen = cache[SNAP_NAME]
         pollen.stop()
-
-    @classmethod
-    def check_rng_file(cls):
-        """Check if the rng-tools-debian file needs modification."""
-        file_modified = False
-        with open("/etc/default/rng-tools-debian", "r", encoding="utf-8") as file:
-            if file.read().count('RNGDOPTIONS="--fill-watermark=90% --feed-interval=1"') > 1:
-                file_modified = True
-        if not file_modified:
-            with open("/etc/default/rng-tools-debian", "a", encoding="utf-8") as file:
-                file.writelines(['RNGDOPTIONS="--fill-watermark=90% --feed-interval=1"'])
