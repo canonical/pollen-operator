@@ -32,7 +32,6 @@ class PollenService:
         """
         try:
             apt.update()
-            apt.add_package(["pollinate", "ent"])
             snap.add(SNAP_NAME, channel="candidate")
         except FileNotFoundError as exc:
             raise InstallError from exc
@@ -58,7 +57,11 @@ class PollenService:
             raise ConfigurationWriteError from exc
         except systemd.SystemdError as exc:
             raise ConfigurationWriteError from exc
-        if glob.glob("/dev/tpm*") or Path("/dev/hwrng").exists():
+        if (
+            glob.glob("/dev/tpm*")
+            or Path("/sys/class/misc/hw_random/rng_available").read_text(encoding="utf-8")
+            != "tpm-rng-0"
+        ):
             try:
                 apt.add_package("rng-tools5")
                 self.check_rng_file(charm_state)

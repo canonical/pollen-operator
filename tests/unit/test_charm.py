@@ -67,7 +67,7 @@ class TestCharm(unittest.TestCase):
         self.pollen.prepare("pollen-0", CharmState("hostname"))
         apt_update_mock.assert_called_once()
         write_mock.assert_called_once()
-        apt_install_mock.has_calls(["pollinate", "ent"], "rng-tools-5")
+        apt_install_mock.assert_called_once_with("rng-tools5")
         service_restart_mock.has_calls("rsyslog.service", "rngd.service")
 
     @mock.patch("glob.glob")
@@ -86,7 +86,7 @@ class TestCharm(unittest.TestCase):
         glob_mock,
     ):
         glob_mock.return_value = None
-        apt_install_mock.side_effect = [None, FileNotFoundError]
+        apt_install_mock.side_effect = [FileNotFoundError]
         with self.assertRaises(exceptions.ConfigurationWriteError):
             self.pollen.prepare("pollen-0", CharmState("hostname"))
 
@@ -95,33 +95,31 @@ class TestCharm(unittest.TestCase):
     @mock.patch("charms.operator_libs_linux.v2.snap.add")
     @mock.patch("subprocess.run")
     @mock.patch("pathlib.Path.exists")
-    @mock.patch("charms.operator_libs_linux.v0.apt.add_package")
     @mock.patch("charms.operator_libs_linux.v0.apt.update")
+    @mock.patch("pathlib.Path.read_text")
     def test_pollen_prepare(
         self,
+        read_text_mock,
         apt_update_mock,
-        apt_install_mock,
         path_mock,
         run_mock,
         snap_mock,
         service_restart_mock,
         glob_mock,
     ):
+        read_text_mock.return_value = "tpm-rng-0"
         glob_mock.return_value = None
         path_mock.return_value = False
         self.pollen.prepare("pollen-0", CharmState("hostname"))
         apt_update_mock.assert_called_once()
-        apt_install_mock.assert_called_once_with(["pollinate", "ent"])
         service_restart_mock.assert_called_once_with("rsyslog.service")
 
-    @mock.patch("charms.operator_libs_linux.v0.apt.add_package")
     @mock.patch("charms.operator_libs_linux.v0.apt.update")
     def test_pollen_prepare_install_error(
         self,
         apt_update_mock,
-        apt_install_mock,
     ):
-        apt_install_mock.side_effect = FileNotFoundError
+        apt_update_mock.side_effect = FileNotFoundError
         with self.assertRaises(exceptions.InstallError):
             self.pollen.prepare("pollen-0", CharmState("hostname"))
 

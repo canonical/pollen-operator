@@ -71,7 +71,6 @@ async def app(
         channel="beta",
         config={"src-overwrite": json.dumps(any_charm_src_overwrite)},
     )
-    await run_action(any_app_name, "rpc", method="start_server")
     await ops_test.model.wait_for_idle(status="active")
 
     app_charm = await ops_test.build_charm(".")
