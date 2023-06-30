@@ -85,14 +85,14 @@ class PollenService:
         Args:
             charm_state: Pollen charm's CharmState instance.
         """
-        
         file = Path("/etc/default/rng-tools-debian")
         charm_state.rng_tools_file = (
             None
-            if not file.exists() or 2
+            if not file.exists()
+            or 2
             > file.read_text(encoding="utf-8").count(
                 'RNGDOPTIONS="--fill-watermark=90% --feed-interval=1"'
-            ) 
+            )
             else 'RNGDOPTIONS="--fill-watermark=90% --feed-interval=1"'
         )
         if not charm_state.rng_tools_file:
