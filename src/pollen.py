@@ -53,9 +53,7 @@ class PollenService:
                 check=True,
             )
             systemd.service_restart("rsyslog.service")
-        except FileNotFoundError as exc:
-            raise ConfigurationWriteError from exc
-        except systemd.SystemdError as exc:
+        except (FileNotFoundError, systemd.SystemdError) as exc:
             raise ConfigurationWriteError from exc
         if (
             glob.glob("/dev/tpm*")
@@ -88,6 +86,14 @@ class PollenService:
             charm_state: Pollen charm's CharmState instance.
         """
         file = Path("/etc/default/rng-tools-debian")
+        charm_state.rng_tools_file = (
+            None
+            if 2
+            > file.read_text(encoding="utf-8").count(
+                'RNGDOPTIONS="--fill-watermark=90% --feed-interval=1"'
+            )
+            else 'RNGDOPTIONS="--fill-watermark=90% --feed-interval=1"'
+        )
         if not charm_state.rng_tools_file:
             charm_state.rng_tools_file = 'RNGDOPTIONS="--fill-watermark=90% --feed-interval=1"'
             file.write_text(f"\n{charm_state.rng_tools_file}", encoding="utf-8")
