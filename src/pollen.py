@@ -95,5 +95,4 @@ class PollenService:
             else 'RNGDOPTIONS="--fill-watermark=90% --feed-interval=1"'
         )
         if not charm_state.rng_tools_file:
-            charm_state.rng_tools_file = 'RNGDOPTIONS="--fill-watermark=90% --feed-interval=1"'
             file.write_text(f"\n{charm_state.rng_tools_file}", encoding="utf-8")
