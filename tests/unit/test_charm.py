@@ -9,6 +9,7 @@ from unittest import mock
 import ops
 import ops.testing
 from charms.operator_libs_linux.v1 import systemd
+from charms.operator_libs_linux.v2 import snap
 
 import exceptions
 from charm import PollenOperatorCharm
@@ -46,16 +47,20 @@ class TestCharm(unittest.TestCase):
     @mock.patch("pathlib.Path.write_text")
     @mock.patch("pathlib.Path.read_text")
     @mock.patch("charms.operator_libs_linux.v1.systemd.service_restart")
-    @mock.patch("subprocess.run")
+    @mock.patch("pathlib.Path.read_bytes")
+    @mock.patch("pathlib.Path.write_bytes")
     @mock.patch("pathlib.Path.exists")
+    @mock.patch("charms.operator_libs_linux.v2.snap.add")
     @mock.patch("charms.operator_libs_linux.v0.apt.add_package")
     @mock.patch("charms.operator_libs_linux.v0.apt.update")
     def test_pollen_prepare_extra_modules(
         self,
         apt_update_mock,
         apt_install_mock,
+        snap_mock,
         exists_path_mock,
-        run_mock,
+        write_bytes_mock,
+        read_bytes_mock,
         service_restart_mock,
         read_mock,
         write_mock,
@@ -73,14 +78,16 @@ class TestCharm(unittest.TestCase):
     @mock.patch("glob.glob")
     @mock.patch("charms.operator_libs_linux.v1.systemd.service_restart")
     @mock.patch("charms.operator_libs_linux.v2.snap.add")
-    @mock.patch("subprocess.run")
+    @mock.patch("pathlib.Path.read_bytes")
+    @mock.patch("pathlib.Path.write_bytes")
     @mock.patch("charms.operator_libs_linux.v0.apt.add_package")
     @mock.patch("charms.operator_libs_linux.v0.apt.update")
     def test_pollen_prepare_extra_modules_error(
         self,
         apt_update_mock,
         apt_install_mock,
-        run_mock,
+        write_bytes_error,
+        read_bytes_mock,
         snap_mock,
         service_restart_mock,
         glob_mock,
@@ -93,7 +100,8 @@ class TestCharm(unittest.TestCase):
     @mock.patch("glob.glob")
     @mock.patch("charms.operator_libs_linux.v1.systemd.service_restart")
     @mock.patch("charms.operator_libs_linux.v2.snap.add")
-    @mock.patch("subprocess.run")
+    @mock.patch("pathlib.Path.read_bytes")
+    @mock.patch("pathlib.Path.write_bytes")
     @mock.patch("pathlib.Path.exists")
     @mock.patch("charms.operator_libs_linux.v0.apt.update")
     @mock.patch("pathlib.Path.read_text")
@@ -102,7 +110,8 @@ class TestCharm(unittest.TestCase):
         read_text_mock,
         apt_update_mock,
         path_mock,
-        run_mock,
+        write_bytes_mock,
+        read_bytes_mock,
         snap_mock,
         service_restart_mock,
         glob_mock,
@@ -111,27 +120,30 @@ class TestCharm(unittest.TestCase):
         glob_mock.return_value = None
         path_mock.return_value = False
         self.pollen.prepare("pollen-0", CharmState("hostname"))
-        apt_update_mock.assert_called_once()
         service_restart_mock.assert_called_once_with("rsyslog.service")
 
-    @mock.patch("charms.operator_libs_linux.v0.apt.update")
+    @mock.patch("charms.operator_libs_linux.v2.snap.add")
     def test_pollen_prepare_install_error(
         self,
-        apt_update_mock,
+        snap_mock,
     ):
-        apt_update_mock.side_effect = FileNotFoundError
+        snap_mock.side_effect = snap.SnapError
         with self.assertRaises(exceptions.InstallError):
             self.pollen.prepare("pollen-0", CharmState("hostname"))
 
     @mock.patch("charms.operator_libs_linux.v1.systemd.service_restart")
-    @mock.patch("subprocess.run")
+    @mock.patch("charms.operator_libs_linux.v2.snap.add")
+    @mock.patch("pathlib.Path.read_bytes")
+    @mock.patch("pathlib.Path.write_bytes")
     @mock.patch("charms.operator_libs_linux.v0.apt.add_package")
     @mock.patch("charms.operator_libs_linux.v0.apt.update")
     def test_pollen_prepare_configuration_error(
         self,
         apt_update_mock,
         apt_install_mock,
-        subprocess_mock,
+        write_bytes_mock,
+        read_bytes_mock,
+        snap_mock,
         service_restart_mock,
     ):
         service_restart_mock.side_effect = FileNotFoundError

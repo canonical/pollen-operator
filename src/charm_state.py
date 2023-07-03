@@ -2,6 +2,8 @@
 # See LICENSE file for licensing details.
 """Module that handles Pollen charm's state."""
 
+from pathlib import Path
+
 from pydantic import BaseModel, Extra
 
 HTTP_PORT = "443"
@@ -57,3 +59,21 @@ class CharmState:
         """
         hostname = charm.model.get_binding("website").network.bind_address
         return cls(hostname)
+
+    def check_rng_file(self):
+        """Check if the rng-tools-debian file needs modification."""
+        file = Path("/etc/default/rng-tools-debian")
+        # The file already has this line commented by default,
+        # so we should check if it appears in the file twice (commented and actually written).
+        # The file needs the commented code header so the rngd service does not fail.
+        self.rng_tools_file = (
+            None
+            if not file.exists()
+            or 2
+            > file.read_text(encoding="utf-8").count(
+                'RNGDOPTIONS="--fill-watermark=90% --feed-interval=1"'
+            )
+            else 'RNGDOPTIONS="--fill-watermark=90% --feed-interval=1"'
+        )
+        if not self.rng_tools_file:
+            file.write_text(f"\n{self.rng_tools_file}", encoding="utf-8")
