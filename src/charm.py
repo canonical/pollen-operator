@@ -51,7 +51,6 @@ class PollenOperatorCharm(ops.CharmBase):
             dashboard_dirs=["./src/grafana_dashboards"],
         )
         self.pollen = PollenService()
-        self.hostname = self.model.get_binding("website").network.bind_address
         self._charm_state = CharmState.from_charm(self)
 
     def _on_website_relation_changed(self, event: ops.RelationChangedEvent):

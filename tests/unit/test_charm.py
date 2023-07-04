@@ -67,7 +67,7 @@ class TestCharm(unittest.TestCase):
         glob_mock,
     ):
         glob_mock.return_value = None
-        read_mock.return_value = 'RNGDOPTIONS="--fill-watermark=90% --feed-interval=1"'
+        read_mock.return_value = '# RNGDOPTIONS="--fill-watermark=90% --feed-interval=1"'
         exists_path_mock.return_value = True
         self.pollen.prepare("pollen-0", CharmState("hostname"))
         apt_update_mock.assert_called_once()
@@ -93,7 +93,7 @@ class TestCharm(unittest.TestCase):
         glob_mock,
     ):
         glob_mock.return_value = None
-        apt_install_mock.side_effect = [FileNotFoundError]
+        apt_install_mock.side_effect = [systemd.SystemdError]
         with self.assertRaises(exceptions.ConfigurationWriteError):
             self.pollen.prepare("pollen-0", CharmState("hostname"))
 

@@ -69,8 +69,8 @@ class CharmState:
         self.rng_tools_file = (
             'RNGDOPTIONS="--fill-watermark=90% --feed-interval=1"'
             if not file.exists()
-            or '# RNGDOPTIONS="--fill-watermark=90% --feed-interval=1"' in
-            file.read_text(encoding="utf-8")
+            or '# RNGDOPTIONS="--fill-watermark=90% --feed-interval=1"'
+            in file.read_text(encoding="utf-8")
             else None
         )
         if self.rng_tools_file:
