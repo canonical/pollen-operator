@@ -67,13 +67,11 @@ class CharmState:
         # so we should check if it appears in the file twice (commented and actually written).
         # The file needs the commented code header so the rngd service does not fail.
         self.rng_tools_file = (
-            None
+            'RNGDOPTIONS="--fill-watermark=90% --feed-interval=1"'
             if not file.exists()
-            or 2
-            > file.read_text(encoding="utf-8").count(
-                'RNGDOPTIONS="--fill-watermark=90% --feed-interval=1"'
-            )
-            else 'RNGDOPTIONS="--fill-watermark=90% --feed-interval=1"'
+            or '# RNGDOPTIONS="--fill-watermark=90% --feed-interval=1"' in
+            file.read_text(encoding="utf-8")
+            else None
         )
-        if not self.rng_tools_file:
-            file.write_text(f"\n{self.rng_tools_file}", encoding="utf-8")
+        if self.rng_tools_file:
+            file.write_text(f"{self.rng_tools_file}", encoding="utf-8")

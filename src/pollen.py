@@ -5,6 +5,7 @@
 
 import glob
 from pathlib import Path
+import os
 
 from charms.operator_libs_linux.v0 import apt
 from charms.operator_libs_linux.v1 import systemd
@@ -58,7 +59,7 @@ class PollenService:
                 apt.add_package("rng-tools5")
                 charm_state.check_rng_file()
                 systemd.service_restart("rngd.service")
-            except (FileNotFoundError, systemd.SystemdError) as exc:
+            except (systemd.SystemdError) as exc:
                 raise ConfigurationWriteError from exc
 
     def start(self):
