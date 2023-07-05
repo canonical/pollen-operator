@@ -56,7 +56,7 @@ class PollenService:
             try:
                 apt.update()
                 apt.add_package("rng-tools5")
-                charm_state.check_rng_file()
+                self.check_rng_file(charm_state)
                 systemd.service_restart("rngd.service")
             except systemd.SystemdError as exc:
                 raise ConfigurationWriteError from exc
@@ -72,3 +72,21 @@ class PollenService:
         cache = snap.SnapCache()
         pollen = cache[SNAP_NAME]
         pollen.stop()
+
+    def check_rng_file(self, charm_state):
+        """Check if the rng-tools-debian file needs modification.
+
+        Args:
+            charm_state: Pollen charm's CharmState instance.
+        """
+        file = Path("/etc/default/rng-tools-debian")
+        # The file already has this line commented by default,
+        # so we should check if it appears in the file twice (commented and actually written).
+        # The file needs the commented code header so the rngd service does not fail.
+        if (
+            'RNGDOPTIONS="--fill-watermark=90% --feed-interval=1"' in charm_state.rng_tools_file
+            and '# RNGDOPTIONS="--fill-watermark=90% --feed-interval=1"'
+            not in charm_state.rng_tools_file
+        ):
+            return
+        file.write_text('RNGDOPTIONS="--fill-watermark=90% --feed-interval=1"', encoding="utf-8")

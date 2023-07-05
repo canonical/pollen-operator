@@ -35,7 +35,11 @@ class CharmState:
             hostname: hostname to build the website property
         """
         self._hostname = hostname
-        self.rng_tools_file = None
+        file = Path("/etc/default/rng-tools-debian")
+        # The file already has this line commented by default,
+        # so we should check if it appears in the file twice (commented and actually written).
+        # The file needs the commented code header so the rngd service does not fail.
+        self.rng_tools_file = "" if not file.exists() else file.read_text(encoding="utf-8")
 
     @property
     def website(self) -> WebsiteModel:
@@ -59,19 +63,3 @@ class CharmState:
         """
         hostname = charm.model.get_binding("website").network.bind_address
         return cls(hostname)
-
-    def check_rng_file(self):
-        """Check if the rng-tools-debian file needs modification."""
-        file = Path("/etc/default/rng-tools-debian")
-        # The file already has this line commented by default,
-        # so we should check if it appears in the file twice (commented and actually written).
-        # The file needs the commented code header so the rngd service does not fail.
-        self.rng_tools_file = (
-            'RNGDOPTIONS="--fill-watermark=90% --feed-interval=1"'
-            if not file.exists()
-            or '# RNGDOPTIONS="--fill-watermark=90% --feed-interval=1"'
-            in file.read_text(encoding="utf-8")
-            else None
-        )
-        if self.rng_tools_file:
-            file.write_text(f"{self.rng_tools_file}", encoding="utf-8")
