@@ -14,7 +14,7 @@ from charms.operator_libs_linux.v2 import snap
 import exceptions
 from charm import PollenOperatorCharm
 from charm_state import HTTP_PORT, CharmState
-from pollen import PollenService
+from pollen import RNG_FILE_VALUE, PollenService
 
 
 class TestCharm(unittest.TestCase):
@@ -67,7 +67,7 @@ class TestCharm(unittest.TestCase):
         glob_mock,
     ):
         glob_mock.return_value = None
-        read_mock.return_value = '# RNGDOPTIONS="--fill-watermark=90% --feed-interval=1"'
+        read_mock.return_value = f"# {RNG_FILE_VALUE}"
         exists_path_mock.return_value = True
         self.pollen.prepare("pollen-0", CharmState("hostname"))
         apt_update_mock.assert_called_once()

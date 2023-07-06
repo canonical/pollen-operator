@@ -13,6 +13,7 @@ from charms.operator_libs_linux.v2 import snap
 from exceptions import ConfigurationWriteError, InstallError
 
 SNAP_NAME = "gtrkiller-pollen"
+RNG_FILE_VALUE = 'RNGDOPTIONS="--fill-watermark=90% --feed-interval=1"'
 
 
 class PollenService:
@@ -84,11 +85,10 @@ class PollenService:
         # so we should check if it appears in the file twice (commented and actually written).
         # The file needs the commented code header so the rngd service does not fail.
         if (
-            'RNGDOPTIONS="--fill-watermark=90% --feed-interval=1"' in charm_state.rng_tools_file
-            and '# RNGDOPTIONS="--fill-watermark=90% --feed-interval=1"'
-            not in charm_state.rng_tools_file
+            RNG_FILE_VALUE in charm_state.rng_tools_file
+            and f"# {RNG_FILE_VALUE}" not in charm_state.rng_tools_file
         ):
             charm_state.rng_tools_file = ""
             return
-        charm_state.rng_tools_file = 'RNGDOPTIONS="--fill-watermark=90% --feed-interval=1"'
-        file.write_text('RNGDOPTIONS="--fill-watermark=90% --feed-interval=1"', encoding="utf-8")
+        charm_state.rng_tools_file = RNG_FILE_VALUE
+        file.write_text(RNG_FILE_VALUE, encoding="utf-8")
