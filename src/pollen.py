@@ -88,5 +88,7 @@ class PollenService:
             and '# RNGDOPTIONS="--fill-watermark=90% --feed-interval=1"'
             not in charm_state.rng_tools_file
         ):
+            charm_state.rng_tools_file = ""
             return
+        charm_state.rng_tools_file = 'RNGDOPTIONS="--fill-watermark=90% --feed-interval=1"'
         file.write_text('RNGDOPTIONS="--fill-watermark=90% --feed-interval=1"', encoding="utf-8")
