@@ -24,7 +24,7 @@ from pollen import PollenService
 # Log messages can be retrieved using juju debug-log
 logger = logging.getLogger(__name__)
 
-METRICS_PORT = "2112"
+METRICS_PORT = 2112
 
 
 class PollenOperatorCharm(ops.CharmBase):
@@ -45,7 +45,7 @@ class PollenOperatorCharm(ops.CharmBase):
         self._grafana_agent = COSAgentProvider(
             self,
             metrics_endpoints=[
-                {"path": "/metrics", "port": METRICS_PORT},
+                {"path": "/metrics", "port": str(METRICS_PORT)},
             ],
             metrics_rules_dir="./src/prometheus_alert_rules",
             dashboard_dirs=["./src/grafana_dashboards"],
