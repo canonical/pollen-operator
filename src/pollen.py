@@ -10,6 +10,7 @@ from charms.operator_libs_linux.v0 import apt
 from charms.operator_libs_linux.v1 import systemd
 from charms.operator_libs_linux.v2 import snap
 
+from charm_state import HTTP_PORT
 from exceptions import ConfigurationWriteError, InstallError
 
 SNAP_NAME = "gtrkiller-pollen"
@@ -19,12 +20,11 @@ RNG_FILE_VALUE = 'RNGDOPTIONS="--fill-watermark=90% --feed-interval=1"'
 class PollenService:
     """Pollen service class."""
 
-    def prepare(self, unit_name, charm_state) -> None:
+    def prepare(self, unit_name) -> None:
         """Install packages and write configuration files.
 
         Args:
             unit_name: ¨Pollen charm's unit name.
-            charm_state: Pollen charm's CharmState instance.
 
         Raises:
             InstallError: if the snap fails to install
@@ -66,6 +66,7 @@ class PollenService:
         """Start the pollen service."""
         cache = snap.SnapCache()
         pollen = cache[SNAP_NAME]
+        pollen.set({"http.port": HTTP_PORT})
         pollen.start()
 
     def stop(self):

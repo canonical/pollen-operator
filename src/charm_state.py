@@ -4,7 +4,7 @@
 
 from pydantic import BaseModel, Extra
 
-HTTP_PORT = 80
+HTTP_PORT = 8080
 
 
 class WebsiteModel(BaseModel, extra=Extra.forbid):
