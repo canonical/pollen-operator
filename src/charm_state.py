@@ -2,8 +2,6 @@
 # See LICENSE file for licensing details.
 """Module that handles Pollen charm's state."""
 
-from pathlib import Path
-
 from pydantic import BaseModel, Extra
 
 HTTP_PORT = "443"
