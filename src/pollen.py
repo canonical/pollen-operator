@@ -57,7 +57,7 @@ class PollenService:
             try:
                 apt.update()
                 apt.add_package("rng-tools5")
-                self.ensure_rng_file_contents(charm_state)
+                self.ensure_rng_file_contents()
                 systemd.service_restart("rngd.service")
             except systemd.SystemdError as exc:
                 raise ConfigurationWriteError from exc
@@ -74,12 +74,8 @@ class PollenService:
         pollen = cache[SNAP_NAME]
         pollen.stop()
 
-    def ensure_rng_file_contents(self, charm_state):
-        """Ensure the rng file contents are as expected.
-
-        Args:
-            charm_state: Pollen charm's CharmState instance.
-        """
+    def ensure_rng_file_contents(self):
+        """Ensure the rng file contents are as expected."""
         file = Path("/etc/default/rng-tools-debian")
         if file.read_text(encoding="utf-8") != RNG_FILE_VALUE:
             file.write_text(RNG_FILE_VALUE, encoding="utf-8")
