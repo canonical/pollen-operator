@@ -77,5 +77,5 @@ class PollenService:
     def ensure_rng_file_contents(self):
         """Ensure the rng file contents are as expected."""
         file = Path("/etc/default/rng-tools-debian")
-        if file.read_text(encoding="utf-8") != RNG_FILE_VALUE:
+        if not file.exists() or file.read_text(encoding="utf-8") != RNG_FILE_VALUE:
             file.write_text(RNG_FILE_VALUE, encoding="utf-8")

@@ -35,11 +35,6 @@ class CharmState:
             hostname: hostname to build the website property
         """
         self._hostname = hostname
-        file = Path("/etc/default/rng-tools-debian")
-        # The file already has this line commented by default,
-        # so we should check if it appears in the file twice (commented and actually written).
-        # The file needs the commented code header so the rngd service does not fail.
-        self.rng_tools_file = "" if not file.exists() else file.read_text(encoding="utf-8")
 
     @property
     def website(self) -> WebsiteModel:
