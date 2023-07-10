@@ -155,4 +155,4 @@ class TestCharm(unittest.TestCase):
 
     def test_charm_state_website_property(self):
         charm_state = CharmState("hostname")
-        self.assertEqual(charm_state.website, {"hostname": "hostname", "port": HTTP_PORT})
+        self.assertEqual(charm_state.website, {"hostname": "hostname", "port": str(HTTP_PORT)})
