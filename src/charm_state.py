@@ -4,7 +4,7 @@
 
 from pydantic import BaseModel, Extra
 
-HTTP_PORT = "443"
+HTTP_PORT = 8080
 
 
 class WebsiteModel(BaseModel, extra=Extra.forbid):
@@ -40,7 +40,7 @@ class CharmState:
 
         Returns: a WebsiteDict object to be used by the website relation.
         """
-        website_data = {"hostname": format(self._hostname), "port": HTTP_PORT}
+        website_data = {"hostname": format(self._hostname), "port": str(HTTP_PORT)}
         website_model = WebsiteModel(**website_data)
         return website_model
 

@@ -33,9 +33,11 @@ class TestCharm(unittest.TestCase):
         self.harness.begin()
         self.pollen = PollenService()
 
+    @mock.patch("charms.operator_libs_linux.v2.snap.Snap.set")
     @mock.patch("charms.operator_libs_linux.v2.snap.Snap.start")
-    def test_pollen_start(self, start_mock):
+    def test_pollen_start(self, start_mock, set_mock):
         self.pollen.start()
+        set_mock.assert_called_once()
         start_mock.assert_called_once()
 
     @mock.patch("charms.operator_libs_linux.v2.snap.Snap.stop")
@@ -69,7 +71,7 @@ class TestCharm(unittest.TestCase):
         glob_mock.return_value = None
         read_mock.return_value = f"# {RNG_FILE_VALUE}"
         exists_path_mock.return_value = True
-        self.pollen.prepare("pollen-0", CharmState("hostname"))
+        self.pollen.prepare("pollen-0")
         apt_update_mock.assert_called_once()
         write_mock.assert_called_once()
         apt_install_mock.assert_called_once_with("rng-tools5")
@@ -95,7 +97,7 @@ class TestCharm(unittest.TestCase):
         glob_mock.return_value = None
         apt_install_mock.side_effect = [systemd.SystemdError]
         with self.assertRaises(exceptions.ConfigurationWriteError):
-            self.pollen.prepare("pollen-0", CharmState("hostname"))
+            self.pollen.prepare("pollen-0")
 
     @mock.patch("glob.glob")
     @mock.patch("charms.operator_libs_linux.v1.systemd.service_restart")
@@ -119,7 +121,7 @@ class TestCharm(unittest.TestCase):
         read_text_mock.return_value = "tpm-rng-0"
         glob_mock.return_value = None
         path_mock.return_value = False
-        self.pollen.prepare("pollen-0", CharmState("hostname"))
+        self.pollen.prepare("pollen-0")
         service_restart_mock.assert_called_once_with("rsyslog.service")
 
     @mock.patch("charms.operator_libs_linux.v2.snap.add")
@@ -129,7 +131,7 @@ class TestCharm(unittest.TestCase):
     ):
         snap_mock.side_effect = snap.SnapError
         with self.assertRaises(exceptions.InstallError):
-            self.pollen.prepare("pollen-0", CharmState("hostname"))
+            self.pollen.prepare("pollen-0")
 
     @mock.patch("charms.operator_libs_linux.v1.systemd.service_restart")
     @mock.patch("charms.operator_libs_linux.v2.snap.add")
@@ -148,11 +150,11 @@ class TestCharm(unittest.TestCase):
     ):
         service_restart_mock.side_effect = FileNotFoundError
         with self.assertRaises(exceptions.ConfigurationWriteError):
-            self.pollen.prepare("pollen-0", CharmState("hostname"))
+            self.pollen.prepare("pollen-0")
         service_restart_mock.side_effect = systemd.SystemdError
         with self.assertRaises(exceptions.ConfigurationWriteError):
-            self.pollen.prepare("pollen-0", CharmState("hostname"))
+            self.pollen.prepare("pollen-0")
 
     def test_charm_state_website_property(self):
         charm_state = CharmState("hostname")
-        self.assertEqual(charm_state.website, {"hostname": "hostname", "port": HTTP_PORT})
+        self.assertEqual(charm_state.website, {"hostname": "hostname", "port": str(HTTP_PORT)})

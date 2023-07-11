@@ -24,7 +24,7 @@ from pollen import PollenService
 # Log messages can be retrieved using juju debug-log
 logger = logging.getLogger(__name__)
 
-METRICS_PORT = "2112"
+METRICS_PORT = 2112
 
 
 class PollenOperatorCharm(ops.CharmBase):
@@ -68,7 +68,7 @@ class PollenOperatorCharm(ops.CharmBase):
             event: Event triggering the install handler.
         """
         self.unit.status = MaintenanceStatus("Installing dependencies")
-        self.pollen.prepare(str(self.unit.name).replace("/", "-"), self._charm_state)
+        self.pollen.prepare(str(self.unit.name).replace("/", "-"))
 
     def _on_upgrade_charm(self, event: ops.UpgradeCharmEvent):
         """Handle upgrade-charm.
@@ -77,7 +77,7 @@ class PollenOperatorCharm(ops.CharmBase):
             event: Event triggering the upgrade-charm handler.
         """
         self.unit.status = MaintenanceStatus("Upgrading dependencies")
-        self.pollen.prepare(str(self.unit.name).replace("/", "-"), self._charm_state)
+        self.pollen.prepare(str(self.unit.name).replace("/", "-"))
         self.unit.status = ActiveStatus()
 
     def _on_start(self, event: ops.StartEvent):
