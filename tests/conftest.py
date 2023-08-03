@@ -1,7 +1,7 @@
 # Copyright 2023 Canonical Ltd.
 # See LICENSE file for licensing details.
 
-"""Fixtures for Indico charm tests."""
+"""Fixtures for Pollen charm tests."""
 
 
 def pytest_addoption(parser):
