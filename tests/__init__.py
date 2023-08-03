@@ -1,2 +1,4 @@
-# Copyright 2023 Canonical Ltd.  # noqa: D104
+# Copyright 2023 Canonical Ltd.
 # See LICENSE file for licensing details.
+
+# noqa: D104
