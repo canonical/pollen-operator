@@ -13,6 +13,7 @@ from charms.operator_libs_linux.v2 import snap
 from charm_state import HTTP_PORT
 from exceptions import ConfigurationWriteError, InstallError
 
+# This will be changed to 'pollen' once the upstream snap location is updated.
 SNAP_NAME = "gtrkiller-pollen"
 RNG_FILE_VALUE = 'RNGDOPTIONS="--fill-watermark=90% --feed-interval=1"'
 
