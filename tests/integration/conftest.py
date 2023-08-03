@@ -9,7 +9,7 @@ from typing import Any, Awaitable, Callable
 import pytest_asyncio
 import yaml
 from ops.model import ActiveStatus
-from pytest import fixture
+from pytest import Config, fixture
 from pytest_operator.plugin import OpsTest
 
 
@@ -52,6 +52,7 @@ def run_action(ops_test: OpsTest) -> Callable[[str, str], Awaitable[Any]]:
 async def app(
     ops_test: OpsTest,
     app_name: str,
+    pytestconfig: Config,
     run_action,
 ):
     """Pollen charm used for integration testing.
@@ -73,9 +74,9 @@ async def app(
     )
     await ops_test.model.wait_for_idle(status="active")
 
-    app_charm = await ops_test.build_charm(".")
+    charm = pytestconfig.getoption("--charm-file")
     application = await ops_test.model.deploy(
-        app_charm,
+        f"./{charm}",
         application_name=app_name,
         series="jammy",
     )
