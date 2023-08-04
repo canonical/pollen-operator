@@ -1,4 +1,4 @@
 # Copyright 2023 Canonical Ltd.
 # See LICENSE file for licensing details.
 
-# noqa: D104
+"""Tests for the pollen operator."""
