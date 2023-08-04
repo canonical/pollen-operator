@@ -10,4 +10,5 @@ def pytest_addoption(parser):
     Args:
         parser: Pytest parser.
     """
+    raise NotImplementedError
     parser.addoption("--charm-file", action="store")
