@@ -71,7 +71,7 @@ class TestCharm(unittest.TestCase):
         glob_mock.return_value = None
         read_mock.return_value = f"# {RNG_FILE_VALUE}"
         exists_path_mock.return_value = True
-        self.pollen.prepare("pollen-0")
+        self.pollen.prepare("pollen/0")
         apt_update_mock.assert_called_once()
         write_mock.assert_called_once()
         apt_install_mock.assert_called_once_with("rng-tools5")
@@ -97,7 +97,7 @@ class TestCharm(unittest.TestCase):
         glob_mock.return_value = None
         apt_install_mock.side_effect = [systemd.SystemdError]
         with self.assertRaises(exceptions.ConfigurationWriteError):
-            self.pollen.prepare("pollen-0")
+            self.pollen.prepare("pollen/0")
 
     @mock.patch("glob.glob")
     @mock.patch("charms.operator_libs_linux.v1.systemd.service_restart")
@@ -121,7 +121,7 @@ class TestCharm(unittest.TestCase):
         read_text_mock.return_value = "tpm-rng-0"
         glob_mock.return_value = None
         path_mock.return_value = False
-        self.pollen.prepare("pollen-0")
+        self.pollen.prepare("pollen/0")
         service_restart_mock.assert_called_once_with("rsyslog.service")
 
     @mock.patch("charms.operator_libs_linux.v2.snap.add")
@@ -131,7 +131,7 @@ class TestCharm(unittest.TestCase):
     ):
         snap_mock.side_effect = snap.SnapError
         with self.assertRaises(exceptions.InstallError):
-            self.pollen.prepare("pollen-0")
+            self.pollen.prepare("pollen/0")
 
     @mock.patch("charms.operator_libs_linux.v1.systemd.service_restart")
     @mock.patch("charms.operator_libs_linux.v2.snap.add")
@@ -150,10 +150,10 @@ class TestCharm(unittest.TestCase):
     ):
         service_restart_mock.side_effect = FileNotFoundError
         with self.assertRaises(exceptions.ConfigurationWriteError):
-            self.pollen.prepare("pollen-0")
+            self.pollen.prepare("pollen/0")
         service_restart_mock.side_effect = systemd.SystemdError
         with self.assertRaises(exceptions.ConfigurationWriteError):
-            self.pollen.prepare("pollen-0")
+            self.pollen.prepare("pollen/0")
 
     def test_charm_state_website_property(self):
         charm_state = CharmState("hostname")
