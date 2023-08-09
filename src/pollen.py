@@ -35,6 +35,7 @@ class PollenService:
             snap.add(SNAP_NAME, channel="candidate")
         except snap.SnapError as exc:
             raise InstallError from exc
+        unit_name = unit_name.replace("/", "-")
         try:
             logrotate_src = Path(
                 f"/var/lib/juju/agents/unit-{unit_name}/charm/files/logrotate.conf"
