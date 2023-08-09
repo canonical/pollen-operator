@@ -27,11 +27,9 @@ async def test_active(app: Application):
 @pytest.mark.asyncio
 async def test_website_relation(app: Application, run_action):
     """
-    arrange: given charm has been built and deployed,
-    act: update the additional-hostnames option in the nginx-route relation using any-charm.
-    assert: HTTP request with the additional-hostnames value as the host header should be
-        forwarded to the application correctly. And the additional-hostnames should exist
-        in the nginx-route relation data.
+    arrange: given charm has been built, deployed and related
+    act: get the relation data from the charm.
+    assert: the relation data has the fields hostname and port as expected.
     """
     action_result = await run_action(ANY_APP_NAME, "get-relation-data")
     relation_data = json.loads(action_result["relation-data"])[0]
