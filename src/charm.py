@@ -4,13 +4,7 @@
 #
 # Learn more at: https://juju.is/docs/sdk
 
-"""Charm the service.
-
-Refer to the following post for a quick-start guide that will help you
-develop a new k8s charm using the Operator Framework:
-
-https://discourse.charmhub.io/t/4208
-"""
+"""Charm for Pollen on a machine."""
 
 import logging
 
@@ -28,7 +22,7 @@ METRICS_PORT = 2112
 
 
 class PollenOperatorCharm(ops.CharmBase):
-    """Charm the service."""
+    """Charm the Pollen service."""
 
     def __init__(self, *args):
         """Construct.
