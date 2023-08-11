@@ -9,6 +9,7 @@ header:
       - '**'
     paths-ignore:
       - '.github/**'
+      - '**/*.json'
       - '**/*.j2'
       - '**/*.md'
       - '**/*.txt'
@@ -24,5 +25,4 @@ header:
       - 'lib/**'
       - '**/.gitkeep'
       - 'src/prometheus_alert_rules/pollen_missing.rule'
-      - 'src/grafana_dashboards/pollen.json'
     comment: on-failure
