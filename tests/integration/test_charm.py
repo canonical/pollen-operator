@@ -1,35 +1,55 @@
-#!/usr/bin/env python3
-# Copyright 2023 Franco
+# Copyright 2023 Canonical Ltd.
 # See LICENSE file for licensing details.
 
-import asyncio
-import logging
-from pathlib import Path
+"""Integration test module."""
+
+import json
 
 import pytest
-import yaml
-from pytest_operator.plugin import OpsTest
+from ops.model import ActiveStatus, Application
 
-logger = logging.getLogger(__name__)
+from charm import METRICS_PORT
 
-METADATA = yaml.safe_load(Path("./metadata.yaml").read_text())
-APP_NAME = METADATA["name"]
+ANY_APP_NAME = "any-app"
 
 
+@pytest.mark.asyncio
 @pytest.mark.abort_on_fail
-async def test_build_and_deploy(ops_test: OpsTest):
-    """Build the charm-under-test and deploy it together with related charms.
-
-    Assert on the unit status before any relations/configurations take place.
+async def test_active(app: Application):
     """
-    # Build and deploy charm from local source folder
-    charm = await ops_test.build_charm(".")
-    resources = {"httpbin-image": METADATA["resources"]["httpbin-image"]["upstream-source"]}
+    arrange: given charm has been built, deployed and related to a dependent application
+    act: when the status is checked
+    assert: then the workload status is active.
+    """
+    assert app.units[0].workload_status == ActiveStatus.name
 
-    # Deploy the charm and wait for active/idle status
-    await asyncio.gather(
-        ops_test.model.deploy(charm, resources=resources, application_name=APP_NAME),
-        ops_test.model.wait_for_idle(
-            apps=[APP_NAME], status="active", raise_on_blocked=True, timeout=1000
-        ),
-    )
+
+@pytest.mark.asyncio
+async def test_website_relation(app: Application, run_action):
+    """
+    arrange: given charm has been built, deployed and related
+    act: get the relation data from the charm.
+    assert: the relation data has the fields hostname and port as expected.
+    """
+    action_result = await run_action(ANY_APP_NAME, "get-relation-data")
+    relation_data = json.loads(action_result["relation-data"])[0]
+    assert "hostname" and "port" in relation_data["unit_data"]["pollen/0"]
+
+
+@pytest.mark.asyncio
+@pytest.mark.abort_on_fail
+async def test_prom_metrics_are_up(app: Application):
+    """
+    arrange: given charm in its initial state
+    act: when the metrics endpoint is scraped
+    assert: the response is 200 (HTTP OK)
+    """
+    # Application actually does have units
+    pollen_unit = app.units[0]
+    # Send request to /metrics for each target and check the response
+    cmd = f"curl http://localhost:{METRICS_PORT}/metrics"
+    action = await pollen_unit.run(cmd)
+    code = action.results.get("Code")
+    stdout = action.results.get("Stdout")
+    stderr = action.results.get("Stderr")
+    assert code == "0", f"{cmd} failed ({code}): {stderr or stdout}"
