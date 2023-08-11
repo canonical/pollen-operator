@@ -2,22 +2,19 @@
 # See LICENSE file for licensing details.
 
 name: pollen
-display-name: Charm Template
-summary: A very short one-line summary of the charm.
+display-name: Pollen
+summary: Pollen Entropy-as-a-Service
+maintainers:
+  - launchpad.net/~canonical-is-devops
+issues: https://github.com/canonical/pollen-operator/issues
+source: https://github.com/canonical/pollen-operator
+docs: "https://discourse.charmhub.io/t/pollen-documentation-overview/10915"
 
 description: |
-  A single sentence that says what the charm is, concisely and memorably.
+  Pollen is a fast, secure, Entropy-as-a-Service server.
 
-  A paragraph of one to three short sentences, that describe what the charm does.
-
-  A third paragraph that explains what need the charm meets.
-
-  Finally, a paragraph that describes whom the charm is useful for.
-containers:
-  httpbin:
-    resource: httpbin-image
-resources:
-  httpbin-image:
-    type: oci-image
-    description: OCI image for httpbin
-    upstream-source: kennethreitz/httpbin
+provides:
+  website:
+    interface: http
+  cos-agent:
+    interface: cos_agent
