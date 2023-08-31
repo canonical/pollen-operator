@@ -1,8 +1,6 @@
 #!/usr/bin/env python3
 # Copyright 2023 Canonical Ltd.
 # See LICENSE file for licensing details.
-#
-# Learn more at: https://juju.is/docs/sdk
 
 """Charm for Pollen on a machine."""
 
@@ -51,7 +49,7 @@ class PollenOperatorCharm(ops.CharmBase):
         """Handle website-relation-changed.
 
         Args:
-            event: Event triggering the website relation joined handler.
+            event: Event triggering the website relation changed handler.
         """
         event.relation.data[self.unit].update(self._charm_state.website)
 
