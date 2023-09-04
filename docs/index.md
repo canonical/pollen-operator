@@ -35,15 +35,9 @@ If there's a particular area of documentation that you'd like to see that's miss
 # Navigation
 
 | Level | Path | Navlink |
-
 | -- | -- | -- |
-
 | 1 | tutorial | [Tutorial]() |
-
 | 1 | how-to | [How to]() |
-
 | 2 | how-to-contribute | [Contribute](/t/pollen-docs-how-to-contribute/11738) |
-
 | 1 | reference | [Reference]() |
-
 | 1 | explanation | [Explanation]() |
