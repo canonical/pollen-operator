@@ -31,3 +31,8 @@ Pollen is an open-source project that welcomes community contributions, suggesti
 Documentation is an important part of this project, and we take the same open-source approach to the documentation as the code. As such, we welcome community contributions, suggestions and constructive feedback on our documentation. Our documentation is hosted on the [Charmhub forum](https://discourse.charmhub.io/) to enable easy collaboration. Please use the "Help us improve this documentation" links on each documentation page to either directly change something you see that's wrong, or ask a question, or make a suggestion about a potential change via the comments section.
 
 If there's a particular area of documentation that you'd like to see that's missing, please [file a bug](https://github.com/canonical/pollen-operator/issues).
+
+# Contents
+
+1. [How to](how-to)
+  a. [Contribute](how-to/contribute.md)
