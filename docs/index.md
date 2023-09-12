@@ -34,8 +34,5 @@ If there's a particular area of documentation that you'd like to see that's miss
 
 # Contents
 
-1. [Tutorial](tutorial)
-2. [How to](how-to)
+1. [How to](how-to)
   a. [Contribute](how-to/contribute.md)
-3. [Reference](reference)
-4. [Explanation](explanation)
