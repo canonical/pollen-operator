@@ -48,8 +48,9 @@ async def test_prom_metrics_are_up(app: Application):
     pollen_unit = app.units[0]
     # Send request to /metrics for each target and check the response
     cmd = f"curl http://localhost:{METRICS_PORT}/metrics"
-    action = await pollen_unit.run(cmd)
-    code = action.results.get("Code")
+    action_cmd = await pollen_unit.run(cmd)
+    action = await action_cmd.wait()
+    code = action.results.get("return-code")
     stdout = action.results.get("Stdout")
     stderr = action.results.get("Stderr")
-    assert code == "0", f"{cmd} failed ({code}): {stderr or stdout}"
+    assert code == 0, f"{cmd} failed ({code}): {stderr or stdout}"
