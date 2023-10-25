@@ -4,8 +4,7 @@
 
 This document explains the processes and practices recommended for contributing enhancements to the Pollen operator.
 
-- Generally, before developing enhancements to this charm, you should consider [opening an issue
-  ](https://github.com/canonical/pollen-operator/issues) explaining your use case.
+- Generally, before developing enhancements to this charm, you should consider [opening an issue](https://github.com/canonical/pollen-operator/issues) explaining your use case.
 - If you would like to chat with us about your use-cases or proposed implementation, you can reach
   us at [Canonical Mattermost public channel](https://chat.charmhub.io/charmhub/channels/charm-dev)
   or [Discourse](https://discourse.charmhub.io/).
