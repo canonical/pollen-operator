@@ -113,4 +113,4 @@ If you result looks like this:
 ```
 {"status":"success","data":{"resultType":"vector","result":[{"metric":{"__name__":"pollen_http_requests_total","instance":"pollendepl_174a28bf-096c-4b93-8950-8aca2fb53bc3_pollen_pollen/0","job":"pollen_0_default","juju_application":"pollen","juju_model":"pollendepl","juju_model_uuid":"174a28bf-096c-4b93-8950-8aca2fb53bc3","juju_unit":"pollen/0"},"value":[1702581642.990,"0"]}]}}
 ```
-Congratulations, you have succesfully related Pollen to COS Lite.
+Congratulations, you have successfully related Pollen to COS Lite.
