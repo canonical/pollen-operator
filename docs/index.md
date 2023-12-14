@@ -9,7 +9,6 @@ You might think of this as PRNG-seeding via Entropy-as-a-Service.
 
 This charm simplifies initial deployment and operations of Pollen
 on a machine, such as scaling the number of instances and clustering and more.
-
 As such, the charm makes it easy for those looking to take control of their own
 entropy generation whilst keeping operations simple.
 
@@ -21,6 +20,7 @@ enterprise deployments.
 ## Project and community
 
 Pollen is an open-source project that welcomes community contributions, suggestions, fixes and constructive feedback.
+
 - [Read our Code of Conduct](https://ubuntu.com/community/code-of-conduct)
 - [Join the Discourse forum](https://discourse.charmhub.io/tag/pollen)
 - [Discuss on the Mattermost chat service](https://chat.charmhub.io/charmhub/channels/charm-dev)
@@ -34,5 +34,8 @@ If there's a particular area of documentation that you'd like to see that's miss
 
 # Contents
 
+1. [Tutorial](tutorial)
 1. [How to](how-to)
-  a. [Contribute](how-to/contribute.md)
+  1. [Contribute](how-to/contribute.md)
+1. [Reference](reference)
+1. [Explanation](explanation)
