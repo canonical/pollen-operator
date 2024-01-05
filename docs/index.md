@@ -37,5 +37,6 @@ If there's a particular area of documentation that you'd like to see that's miss
 1. [Tutorial](tutorial)
 1. [How to](how-to)
   1. [Contribute](how-to/contribute.md)
+  1. [Relate to COS](how-to/relate-to-cos.md)
 1. [Reference](reference)
 1. [Explanation](explanation)
