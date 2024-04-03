@@ -2,4 +2,4 @@
 # See LICENSE file for licensing details.
 
 ops >= 2.3.0
-pydantic ==1.10.14
+pydantic ==1.10.15
