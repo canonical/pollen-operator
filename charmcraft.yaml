@@ -11,6 +11,9 @@ bases:
         channel: "22.04"
 parts:
   charm:
+    plugin: charm
+    source: .
+  conf-data:
     plugin: dump
     source: files
     organize:
