@@ -11,5 +11,10 @@ bases:
         channel: "22.04"
 parts:
   charm:
-    prime: 
-      - files
+    plugin: charm
+    source: .
+  conf-data:
+    plugin: dump
+    source: files
+    organize:
+      "*.conf*": files/
