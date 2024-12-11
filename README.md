@@ -1,12 +1,11 @@
 # Pollen Operator
 
-A juju charm deploying and managing Pollen on a machine. Pollen is a scalable, high performance, free software (AGPL) web server, that provides small strings of entropy, over TLS-encrypted HTTPS or clear text HTTP connections. You might think of this as ‘Entropy-as-a-Service’.
+A Juju charm deploying and managing Pollen on a machine. Pollen is a scalable, high performance, free software (AGPL) web server, that provides small strings of entropy, over TLS-encrypted HTTPS or clear text HTTP connections. You might think of this as ‘Entropy-as-a-Service’.
 
-Pollinate is a free software (GPLv3) script that retrieves entropy from one or more Pollen servers and seeds the local Pseudo Random Number Generator (PRNG). You might think of this as PRNG-seeding via Entropy-as-a-Service.
+[Pollinate](https://github.com/dustinkirkland/pollinate) is a free software (GPLv3) script that retrieves entropy from one or more Pollen servers and seeds the local Pseudo Random Number Generator (PRNG). You might think of this as PRNG-seeding via Entropy-as-a-Service.
 
 This charm simplifies initial deployment and operations of Pollen on a machine, such as scaling the number of instances and clustering and more. As such, the charm makes it easy for those looking to take control of their own entropy generation whilst keeping operations simple.
 
-For DevOps or SRE teams this charm will make operating Pollen simple and straightforward through Juju’s clean interface. It will allow easy deployment into multiple environments for testing of changes, and supports scaling out for enterprise deployments.
 Like any Juju charm, this charm supports one-line deployment, configuration, integration, scaling, and more.
 For Charmed Pollen, this includes:
   - Scaling
