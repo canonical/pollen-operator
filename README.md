@@ -38,4 +38,3 @@ For a full list of integrations, see the [Charmhub documentation](https://charmh
 * [Issues](https://github.com/canonical/pollen-operator/issues) <!--Link to GitHub issues (if applicable)-->
 * [Contributing](https://charmhub.io/pollen/docs/how-to-contribute) <!--Link to any contribution guides-->
 * [Matrix](https://matrix.to/#/#charmhub-charmdev:ubuntu.com) <!--Link to contact info (if applicable), e.g. Matrix channel-->
-`
