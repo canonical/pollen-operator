@@ -32,11 +32,13 @@ Documentation is an important part of this project, and we take the same open-so
 
 If there's a particular area of documentation that you'd like to see that's missing, please [file a bug](https://github.com/canonical/pollen-operator/issues).
 
-# Contents
+# Navigation
 
-1. [Tutorial](tutorial)
-1. [How to](how-to)
-  1. [Contribute](how-to/contribute.md)
-  1. [Relate to COS](how-to/relate-to-cos.md)
-1. [Reference](reference)
-1. [Explanation](explanation)
+| Level | Path | Navlink |
+| -- | -- | -- |
+| 1 | tutorial | [Tutorial]() |
+| 1 | how-to | [How to]() |
+| 2 | how-to-contribute | [Contribute](/t/pollen-docs-how-to-contribute/11738) |
+| 2 | how-to-relate-to-cos | [Relate to COS](/t/pollen-docs-how-to-relate-to-cos/12822) |
+| 1 | reference | [Reference]() |
+| 1 | explanation | [Explanation]() |
