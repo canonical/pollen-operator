@@ -15,7 +15,7 @@ see the Official [Pollen Operator Documentation](https://charmhub.io/pollen/docs
 
 ## Get started
 
-You can follow the tutorial [here](https://charmhub.io/pollen/docs/how-to-relate-to-cos).
+To get started with the Pollen charm, follow the instructions in [How to relate to COS](https://charmhub.io/pollen/docs/how-to-relate-to-cos).
 
 You can check out the [full list of actions here](https://charmhub.io/pollen/actions).
 
