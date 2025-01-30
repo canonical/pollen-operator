@@ -1,4 +1,4 @@
 # Copyright 2024 Canonical Ltd.
 # See LICENSE file for licensing details.
 ops==2.18.0
-pydantic==1.10.19
+pydantic==1.10.20
