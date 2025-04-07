@@ -27,7 +27,7 @@ For this charm, the following events are observed:
 4. [stop](https://documentation.ubuntu.com/juju/latest/reference/hook/index.html#stop): Triggered when a Juju controller is ready to destroy the unit. **Action**: Stop the pollen service.
 5. [website-relation-changed](https://documentation.ubuntu.com/juju/latest/reference/hook/index.html#endpoint-relation-changed): Emitted when another unit involved in the website relation (from either side) touches the relation data. **Action**: Updates the relation data with the website details.
 
-See more in the Juju docs: [Hook](https://documentation.ubuntu.com/juju/latest/user/reference/hook/)
+> See more in the Juju docs: [Hook](https://documentation.ubuntu.com/juju/latest/user/reference/hook/)
 
 ## Charm code overview
 
