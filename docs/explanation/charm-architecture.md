@@ -1,6 +1,6 @@
 # Charm architecture
 
-​The [Pollen](https://github.com/dustinkirkland/pollen) operator is a machine charm designed to deploy and manage Pollen directly on VMs and bare metal. Pollen is a high-performance, scalable, free web server that provides 'Entropy-as-a-Service' by offering small strings of entropy over both HTTPS and clear-text HTTP connections.
+​The [Pollen](https://github.com/dustinkirkland/pollen) operator is a machine charm designed to deploy and manage Pollen directly on VMs and bare metal. Pollen is a high-performance, scalable, free web server that provides "Entropy-as-a-Service" by offering small strings of entropy over both HTTPS and clear-text HTTP connections.
 
 This charm does not use an OCI image, as it runs directly on a machine rather than in a container. The charm uses the [pollen](https://github.com/canonical/pollen/blob/main/snap/snapcraft.yaml) [snap](https://ubuntu.com/core/docs/snaps-in-ubuntu-core) to install pollen during deployment.
 
