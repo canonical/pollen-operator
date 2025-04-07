@@ -1,14 +1,14 @@
 # Charm architecture
 
-​The Pollen operator is a machine charm designed to deploy and manage Pollen directly on machines. Pollen is a high-performance, scalable, free web server that provides 'Entropy-as-a-Service' by offering small strings of entropy over both HTTPS and clear-text HTTP connections.
+​The [Pollen](https://github.com/dustinkirkland/pollen) operator is a machine charm designed to deploy and manage Pollen directly on VMs and bare metal. Pollen is a high-performance, scalable, free web server that provides 'Entropy-as-a-Service' by offering small strings of entropy over both HTTPS and clear-text HTTP connections.
 
-The charm uses the [pollen](https://github.com/canonical/pollen/blob/main/snap/snapcraft.yaml) [snap](https://ubuntu.com/core/docs/snaps-in-ubuntu-core) to install pollen during deployment.
+This charm does not use an OCI image, as it runs directly on a machine rather than in a container. The charm uses the [pollen](https://github.com/canonical/pollen/blob/main/snap/snapcraft.yaml) [snap](https://ubuntu.com/core/docs/snaps-in-ubuntu-core) to install pollen during deployment.
 
-This charm does not use an OCI image, as it runs directly on a machine rather than in a container. Pollen is implemented in Golang and provides small random strings to its clients over network connections. It utilizes TLS (SSL) to ensure privacy, security, and non-repudiation of connections among its clients. Canonical provides a Pollen server as a service to the Ubuntu community at [https://entropy.ubuntu.com](https://entropy.ubuntu.com).
+Canonical provides a Pollen server as a service to the Ubuntu community at [https://entropy.ubuntu.com](https://entropy.ubuntu.com).
 
 ## Metrics
 
-Pollen exposes the following metrics, which are visible in Grafana after [integrating with COS](https://charmhub.io/pollen/docs/how-to-relate-to-cos).
+Pollen exposes the following [OTel](https://opentelemetry.io/docs/specs/otel/metrics/) compliant metrics, which are visible in Grafana after [integrating with COS](https://charmhub.io/pollen/docs/how-to-relate-to-cos).
 
 1. **pollen_http_requests_total** - Total HTTP requests
 2. **pollen_http_responses_codes** - Total HTTP requests by code
@@ -19,8 +19,6 @@ Pollen exposes the following metrics, which are visible in Grafana after [integr
 
 ## Juju events
 
-According to the [Juju SDK](https://canonical-juju.readthedocs-hosted.com/en/latest/user/reference/hook/): "an event is a data structure that encapsulates part of the execution context of a charm".
-
 For this charm, the following events are observed:
 
 1. [install](https://documentation.ubuntu.com/juju/latest/reference/hook/index.html#install): Triggered once per unit at the beginning of a charm’s lifecycle. **Action**: Install packages and write configuration files for pollen.
@@ -28,6 +26,8 @@ For this charm, the following events are observed:
 3. [start](https://documentation.ubuntu.com/juju/latest/reference/hook/index.html#start): Triggered when a unit's initialization is complete. **Action**: Start the pollen service.
 4. [stop](https://documentation.ubuntu.com/juju/latest/reference/hook/index.html#stop): Triggered when a Juju controller is ready to destroy the unit. **Action**: Stop the pollen service.
 5. [website-relation-changed](https://documentation.ubuntu.com/juju/latest/reference/hook/index.html#endpoint-relation-changed): Emitted when another unit involved in the website relation (from either side) touches the relation data. **Action**: Updates the relation data with the website details.
+
+See more in the Juju docs: [Hook](https://documentation.ubuntu.com/juju/latest/user/reference/hook/)
 
 ## Charm code overview
 
