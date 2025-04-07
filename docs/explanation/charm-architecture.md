@@ -10,12 +10,12 @@ Canonical provides a Pollen server as a service to the Ubuntu community at [http
 
 Pollen exposes the following [OTel](https://opentelemetry.io/docs/specs/otel/metrics/) compliant metrics, which are visible in Grafana after [integrating with COS](https://charmhub.io/pollen/docs/how-to-relate-to-cos).
 
-1. **pollen_http_requests_total** - Total HTTP requests
-2. **pollen_http_responses_codes** - Total HTTP requests by code
-3. **pollen_system_entropy** - System entropy
-4. **pollen_http_response_seconds** - HTTP response time by code
-5. **pollen_response_entropy_per_byte** - Entropy per byte
-6. **pollen_response_entropy_arithmetic_mean_deviation** - Entropy arithmetic mean deviation
+1. **pollen_http_requests_total**: Total HTTP requests
+2. **pollen_http_responses_codes**: Total HTTP requests by code
+3. **pollen_system_entropy**: System entropy
+4. **pollen_http_response_seconds**: HTTP response time by code
+5. **pollen_response_entropy_per_byte**: Entropy per byte
+6. **pollen_response_entropy_arithmetic_mean_deviation**: Entropy arithmetic mean deviation
 
 ## Juju events
 
