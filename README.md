@@ -29,7 +29,7 @@ You can check out the [full list of actions here](https://charmhub.io/pollen/act
 This charm can be integrated with other Juju charms and services:
 
   - [Grafana Agent](https://charmhub.io/grafana-agent-k8s): Grafana Agent is an OpenTelemetry Collector distribution with configuration inspired by Terraform.
-  - [Apachi2](https://charmhub.io/apache2): The Apache HTTP Server Project is an effort to develop and maintain an open-source HTTP server for modern operating systems.
+  - [Apache2](https://charmhub.io/apache2): The Apache HTTP Server Project is an effort to develop and maintain an open-source HTTP server for modern operating systems.
 
 For a full list of integrations, see the [Charmhub documentation](https://charmhub.io/pollen/integrations).
 
