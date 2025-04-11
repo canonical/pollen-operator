@@ -36,7 +36,6 @@ For a full list of integrations, see the [Charmhub documentation](https://charmh
 ## Learn more
 * [Read more](https://charmhub.io/pollen) <!--Link to the charm's official documentation-->
 * [Developer documentation](https://github.com/canonical/pollen) <!--Link to any developer documentation-->
-* [Official webpage](https://github.com/canonical/pollen) <!--(Optional) Link to official webpage/blog/marketing content-->
 * [Troubleshooting](https://matrix.to/#/#charmhub-charmdev:ubuntu.com) <!--(Optional) Link to a page or section about troubleshooting/FAQ-->
 
 ## Project and community
