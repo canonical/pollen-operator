@@ -45,7 +45,15 @@ class PollenOperatorCharm(ops.CharmBase):
             dashboard_dirs=["./src/grafana_dashboards"],
         )
         self.haproxy_route = HaproxyRouteRequirer(
-            self, relation_name=HAPROXY_ROUTE_RELATION, service=self.app.name, ports=[HTTP_PORT]
+            self,
+            relation_name=HAPROXY_ROUTE_RELATION,
+            service=self.app.name,
+            ports=[HTTP_PORT],
+            check_rise=2,
+            check_fall=3,
+            check_interval=2,
+            # Temporary hack until haproxy properly defines how to customize http-check
+            check_path="/\n\thttp-check expect status 400",
         )
         self.pollen = PollenService()
         self._charm_state = CharmState.from_charm(self)
@@ -84,6 +92,7 @@ class PollenOperatorCharm(ops.CharmBase):
             event: Event triggering the start handler.
         """
         self.pollen.start()
+        self.unit.set_ports(HTTP_PORT)
         self.unit.status = ActiveStatus()
 
     def _on_stop(self, event: ops.StopEvent):
