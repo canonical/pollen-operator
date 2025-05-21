@@ -42,7 +42,7 @@ class CharmState:
         """
         website_data = {"hostname": format(self._hostname), "port": str(HTTP_PORT)}
         website_model = WebsiteModel(**website_data)
-        return website_model
+        return website_model.model_dump()
 
     @classmethod
     def from_charm(cls, charm) -> "CharmState":
