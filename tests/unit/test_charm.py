@@ -75,7 +75,9 @@ class TestCharm(unittest.TestCase):
         apt_update_mock.assert_called_once()
         write_mock.assert_called_once()
         apt_install_mock.assert_called_once_with("rng-tools5")
-        service_restart_mock.has_calls("rsyslog.service", "rngd.service")
+        service_restart_mock.assert_has_calls(
+            [mock.call("rsyslog.service"), mock.call("rngd.service")]
+        )
 
     @mock.patch("glob.glob")
     @mock.patch("charms.operator_libs_linux.v1.systemd.service_restart")

@@ -18,3 +18,7 @@ provides:
     interface: http
   cos-agent:
     interface: cos_agent
+requires:
+  haproxy_route:
+    interface: haproxy-route
+    limit: 1

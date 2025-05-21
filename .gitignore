@@ -8,3 +8,5 @@ build/
 htmlcov/
 __pycache__/
 *.rock
+.venv/
+.vscode/

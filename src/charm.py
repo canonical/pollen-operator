@@ -8,15 +8,17 @@ import logging
 
 import ops
 from charms.grafana_agent.v0.cos_agent import COSAgentProvider
+from charms.haproxy.v0.haproxy_route import HaproxyRouteRequirer
 from ops.model import ActiveStatus, MaintenanceStatus
 
 from charm_state import CharmState
-from pollen import PollenService
+from pollen import HTTP_PORT, PollenService
 
 # Log messages can be retrieved using juju debug-log
 logger = logging.getLogger(__name__)
 
 METRICS_PORT = 2112
+HAPROXY_ROUTE_RELATION = "haproxy_route"
 
 
 class PollenOperatorCharm(ops.CharmBase):
@@ -41,6 +43,9 @@ class PollenOperatorCharm(ops.CharmBase):
             ],
             metrics_rules_dir="./src/prometheus_alert_rules",
             dashboard_dirs=["./src/grafana_dashboards"],
+        )
+        self.haproxy_route = HaproxyRouteRequirer(
+            self, relation_name=HAPROXY_ROUTE_RELATION, service=self.app.name, ports=[HTTP_PORT]
         )
         self.pollen = PollenService()
         self._charm_state = CharmState.from_charm(self)
