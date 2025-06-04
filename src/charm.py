@@ -52,8 +52,8 @@ class PollenOperatorCharm(ops.CharmBase):
             check_rise=2,
             check_fall=3,
             check_interval=2,
-            # Temporary hack until haproxy properly defines how to customize http-check
-            check_path="/\n\thttp-check expect status 400",
+            check_path="/metrics",
+            check_port=2112,
         )
         self.pollen = PollenService()
         self._charm_state = CharmState.from_charm(self)
