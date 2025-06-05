@@ -6,8 +6,10 @@ This document explains the processes and practices recommended for relating the 
 
 ## Requirements
 
+<!-- vale Canonical.013-Spell-out-numbers-below-10 = NO -->
 - Juju 3 installed with both a machine and k8s controller bootstrapped
-- Microk8s installed with dns, hostpath-storage and metallb enabled
+<!-- vale Canonical.013-Spell-out-numbers-below-10 = YES -->
+- MicroK8s installed with dns, hostpath-storage and metallb enabled
 
 ## Deployment
 
