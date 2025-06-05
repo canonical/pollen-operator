@@ -1,5 +1,3 @@
-# Pollen Operator
-
 A Juju charm deploying and managing Pollen on a machine. Pollen is a scalable, high performance, free software (AGPL) web server, that provides small strings of entropy, over TLS-encrypted HTTPS or clear text HTTP connections. You might think of this as ‘Entropy-as-a-Service’.
 
 [Pollinate](https://github.com/dustinkirkland/pollinate) is a free software (GPLv3) script that retrieves entropy from one or more Pollen servers and seeds the local Pseudo Random Number Generator (PRNG). You might think of this as PRNG-seeding via Entropy-as-a-Service.
