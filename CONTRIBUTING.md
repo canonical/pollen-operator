@@ -45,14 +45,6 @@ that can be used for linting and formatting code when you're preparing contribut
 - `tox run -e integration`: Integration tests.
 - `tox`: Runs 'format', 'lint', and 'unit' environments.
 
-### Generating src docs for every commit
-
-Run the following command:
-
-```bash
-echo -e "tox -e src-docs\ngit add src-docs\n" >> .git/hooks/pre-commit
-chmod +x .git/hooks/pre-commit
-```
 
 ## Build charm
 
