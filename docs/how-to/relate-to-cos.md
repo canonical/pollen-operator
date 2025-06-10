@@ -6,8 +6,10 @@ This document explains the processes and practices recommended for relating the 
 
 ## Requirements
 
+<!-- vale Canonical.013-Spell-out-numbers-below-10 = NO -->
 - Juju 3 installed with both a machine and k8s controller bootstrapped
-- Microk8s installed with dns, hostpath-storage and metallb enabled
+<!-- vale Canonical.013-Spell-out-numbers-below-10 = YES -->
+- MicroK8s installed with dns, hostpath-storage and metallb enabled
 
 ## Deployment
 
@@ -22,7 +24,7 @@ Now, deploy the Grafana-agent subordinate charm and relate it to Pollen:
 juju deploy grafana-agent --channel=edge
 juju integrate pollen grafana-agent
 ```
-After waiting for the charms to be idle, the juju status should look like this:
+After waiting for the charms to be idle, the Juju status should look like this:
 ```
 Model       Controller  Cloud/Region         Version  SLA          Timestamp
 pollendepl  localhost   localhost/localhost  3.1.6.1  unsupported  15:06:17-03:00
@@ -45,7 +47,7 @@ curl -L https://raw.githubusercontent.com/canonical/cos-lite-bundle/main/overlay
 juju add-model cos
 juju deploy cos-lite --trust --overlay ./offers-overlay.yaml
 ```
-After waiting for all the charms to be idle, the juju status should look like this:
+After waiting for all the charms to be idle, the Juju status should look like this:
 ```
 Model  Controller  Cloud/Region        Version  SLA          Timestamp
 cos    microk8s    microk8s/localhost  3.1.6    unsupported  15:50:38-03:00

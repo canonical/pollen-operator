@@ -1,4 +1,7 @@
+<!-- vale Canonical.007-Headings-sentence-case = NO -->
+<!-- "Operator" is part of the name -->
 # Pollen Operator
+<!-- vale Canonical.007-Headings-sentence-case = YES -->
 
 A Juju charm deploying and managing Pollen on a machine. Pollen is a scalable, high performance, free software (AGPL) web server,
 that provides small strings of entropy over TLS-encrypted HTTPS or clear text HTTP connections. You might think of this as ‘Entropy-as-a-Service’.
