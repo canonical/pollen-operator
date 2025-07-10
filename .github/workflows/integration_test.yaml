@@ -10,3 +10,4 @@ jobs:
     with:
       provider: lxd
       juju-channel: 3.1/stable
+      with-uv: true
