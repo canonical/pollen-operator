@@ -9,3 +9,4 @@ jobs:
     secrets: inherit
     with:
       vale-style-check: true
+      with-uv: true

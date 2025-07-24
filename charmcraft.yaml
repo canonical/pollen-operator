@@ -12,14 +12,9 @@ bases:
 parts:
   charm:
     build-snaps:
-      - rustup
-    override-build: |
-      rustup default stable
-      craftctl default
+      - astral-uv
     build-packages:
-      - libffi-dev
-      - libssl-dev
-      - pkg-config
+      - cargo
   conf-data:
     plugin: dump
     source: files
