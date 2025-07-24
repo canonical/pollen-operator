@@ -25,7 +25,7 @@ integration = [
 lint = [
     "black",
     "codespell",
-    "flake8<6.0.0",
+    "flake8<7.3.1",
     "flake8-builtins",
     "flake8-copyright",
     "flake8-docstrings>=1.6.0",
