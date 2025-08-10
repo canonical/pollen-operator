@@ -35,7 +35,7 @@ lint = [
     "pep8-naming",
     "pydocstyle",
     "pylint",
-    "pyproject-flake8<6.0.0",
+    "pyproject-flake8<7.0.1",
 ]
 static = [
     "bandit[toml]",
