@@ -4,7 +4,7 @@
 
 This charm does not use an OCI image, as it runs directly on a machine rather than in a container. The charm uses the [pollen](https://github.com/canonical/pollen/blob/main/snap/snapcraft.yaml) [snap](https://ubuntu.com/core/docs/snaps-in-ubuntu-core) to install Pollen during deployment.
 
-Canonical provides a Pollen server as a service to the Ubuntu community at [https://entropy.ubuntu.com](https://entropy.ubuntu.com).
+Canonical provides a Pollen server as a service to the Ubuntu community at `https://entropy.ubuntu.com`.
 
 ## Metrics
 
