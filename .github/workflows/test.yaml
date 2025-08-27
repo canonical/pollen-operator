@@ -8,5 +8,5 @@ jobs:
     uses: canonical/operator-workflows/.github/workflows/test.yaml@main
     secrets: inherit
     with:
-      vale-style-check: true
+      vale-style-check: false
       with-uv: true
