@@ -12,7 +12,7 @@ jobs:
     secrets: inherit
     with:
       provider: lxd
-      juju-channel: 3.1/stable
+      juju-channel: 3.6/stable
       with-uv: true
   allure-report:
     if: ${{ !cancelled() && github.event_name == 'schedule' }}
