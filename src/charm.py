@@ -8,7 +8,7 @@ import logging
 
 import ops
 from charms.grafana_agent.v0.cos_agent import COSAgentProvider
-from charms.haproxy.v0.haproxy_route import HaproxyRouteRequirer
+from charms.haproxy.v1.haproxy_route import HaproxyRouteRequirer
 from ops.model import ActiveStatus, MaintenanceStatus
 
 from charm_state import CharmState

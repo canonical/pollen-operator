@@ -7,7 +7,7 @@ To get started using the library, you just need to fetch the library using `char
 
 ```shell
 cd some-charm
-charmcraft fetch-lib charms.haproxy.v0.haproxy_route
+charmcraft fetch-lib charms.haproxy.v1.haproxy_route
 ```
 
 In the `metadata.yaml` of the charm, add the following:
@@ -22,7 +22,7 @@ requires:
 Then, to initialise the library:
 
 ```python
-from charms.haproxy.v0.haproxy_route import HaproxyRouteRequirer
+from charms.haproxy.v1.haproxy_route import HaproxyRouteRequirer
 
 class SomeCharm(CharmBase):
   def __init__(self, *args):
@@ -31,31 +31,39 @@ class SomeCharm(CharmBase):
     # There are 2 ways you can use the requirer implementation:
     # 1. To initialize the requirer with parameters:
     self.haproxy_route_requirer = HaproxyRouteRequirer(self,
-        address=<required>,
-        port=<required>,
+        relation_name=<required>,
+        service=<optional>,
+        ports=<optional>,
+        protocol=<optional>,
+        hosts=<optional>,
         paths=<optional>,
-        subdomains=<optional>,
-        path_rewrite_expressions=<optional>, list of path rewrite expressions,
-        query_rewrite_expressions=<optional>, list of query rewrite expressions,
-        header_rewrites=<optional>, map of {<header_name>: <list of rewrite_expressions>,
+        hostname=<optional>,
+        additional_hostnames=<optional>,
         check_interval=<optional>,
         check_rise=<optional>,
         check_fall=<optional>,
-        check_paths=<optional>,
+        check_path=<optional>,
+        check_port=<optional>,
+        path_rewrite_expressions=<optional>, list of path rewrite expressions,
+        query_rewrite_expressions=<optional>, list of query rewrite expressions,
+        header_rewrite_expressions=<optional>, list of (header_name, rewrite_expression),
         load_balancing_algorithm=<optional>, defaults to "leastconn",
         load_balancing_cookie=<optional>, only used when load_balancing_algorithm is cookie
-        rate_limit_connections_per_minutes=<optional>,
+        load_balancing_consistent_hashing=<optional>, to enable consistent hashing,
+            defaults to False,
+        rate_limit_connections_per_minute=<optional>,
         rate_limit_policy=<optional>,
         upload_limit=<optional>,
         download_limit=<optional>,
         retry_count=<optional>,
-        retry_interval=<optional>,
         retry_redispatch=<optional>,
         deny_paths=<optional>,
         server_timeout=<optional>,
         connect_timeout=<optional>,
         queue_timeout=<optional>,
         server_maxconn=<optional>,
+        unit_address=<optional>,
+        http_server_close=<optional>,
     )
 
     # 2.To initialize the requirer with no parameters, i.e
@@ -99,7 +107,7 @@ Note that this interface supports relating to multiple endpoints.
 
 Then, to initialise the library:
 ```python
-from charms.haproxy.v0.haproxy_route import HaproxyRouteRequirer
+from charms.haproxy.v1.haproxy_route import HaproxyRouteProvider
 
 class SomeCharm(CharmBase):
     self.haproxy_route_provider = HaproxyRouteProvider(self)
@@ -115,7 +123,7 @@ class SomeCharm(CharmBase):
 import json
 import logging
 from enum import Enum
-from typing import Any, MutableMapping, Optional, cast
+from typing import Annotated, Any, Literal, MutableMapping, Optional, cast
 
 from ops import CharmBase, ModelError, RelationBrokenEvent
 from ops.charm import CharmEvents
@@ -124,6 +132,7 @@ from ops.model import Relation
 from pydantic import (
     AnyHttpUrl,
     BaseModel,
+    BeforeValidator,
     ConfigDict,
     Field,
     IPvAnyAddress,
@@ -138,14 +147,38 @@ from typing_extensions import Self
 LIBID = "08b6347482f6455486b5f5bb4dc4e6cf"
 
 # Increment this major API version when introducing breaking changes
-LIBAPI = 0
+LIBAPI = 1
 
 # Increment this PATCH version before using `charmcraft publish-lib` or reset
 # to 0 if you are raising the major API version
-LIBPATCH = 4
+LIBPATCH = 6
 
 logger = logging.getLogger(__name__)
 HAPROXY_ROUTE_RELATION_NAME = "haproxy-route"
+HAPROXY_CONFIG_INVALID_CHARACTERS = "\n\t#\\'\"\r$ "
+
+
+def value_contains_invalid_characters(value: Optional[str]) -> Optional[str]:
+    """Validate if value contains invalid haproxy config characters.
+
+    Args:
+        value: The value to validate.
+
+    Raises:
+        ValueError: When value contains invalid characters.
+
+    Returns:
+        The validated value.
+    """
+    if value is None:
+        return value
+
+    if [char for char in value if char in HAPROXY_CONFIG_INVALID_CHARACTERS]:
+        raise ValueError(f"Relation data contains invalid character(s) {value}")
+    return value
+
+
+VALIDSTR = Annotated[str, BeforeValidator(value_contains_invalid_characters)]
 
 
 class DataValidationError(Exception):
@@ -207,7 +240,7 @@ class _DatabagModel(BaseModel):
             return cls.model_validate_json(json.dumps(data))
         except ValidationError as e:
             msg = f"failed to validate databag: {databag}"
-            logger.error(msg, exc_info=True)
+            logger.error(str(e), exc_info=True)
             raise DataValidationError(msg) from e
 
     @classmethod
@@ -273,17 +306,32 @@ class ServerHealthCheck(BaseModel):
         port: Customize port value for http-check.
     """
 
-    interval: int = Field(
-        description="The interval (in seconds) between health checks.", default=60
+    interval: Optional[int] = Field(
+        description="The interval (in seconds) between health checks.", default=None
     )
-    rise: int = Field(
-        description="How many successful health checks before server is considered up.", default=2
+    rise: Optional[int] = Field(
+        description="How many successful health checks before server is considered up.",
+        default=None,
     )
-    fall: int = Field(
-        description="How many failed health checks before server is considered down.", default=3
+    fall: Optional[int] = Field(
+        description="How many failed health checks before server is considered down.", default=None
     )
-    path: Optional[str] = Field(description="The health check path.", default=None)
+    path: Optional[VALIDSTR] = Field(description="The health check path.", default=None)
     port: Optional[int] = Field(description="The health check port.", default=None)
+
+    @model_validator(mode="after")
+    def check_all_required_fields_set(self) -> Self:
+        """Check that all required fields for health check are set.
+
+        Raises:
+            ValueError: When validation fails.
+
+        Returns:
+            The validated model.
+        """
+        if not bool(self.interval) == bool(self.rise) == bool(self.fall):
+            raise ValueError("All three of interval, rise and fall must be set.")
+        return self
 
 
 # tarpit is not yet implemented
@@ -338,16 +386,50 @@ class LoadBalancingConfiguration(BaseModel):
     Attributes:
         algorithm: Algorithm to use for load balancing.
         cookie: Cookie name to use when algorithm is set to cookie.
+        consistent_hashing: Use consistent hashing to avoid redirection
+            when servers are added/removed.
     """
 
     algorithm: LoadBalancingAlgorithm = Field(
         description="Configure the load balancing algorithm for the service.",
         default=LoadBalancingAlgorithm.LEASTCONN,
     )
-    cookie: Optional[str] = Field(
+    cookie: Optional[VALIDSTR] = Field(
         description="Only used when algorithm is COOKIE. Define the cookie to load balance on.",
         default=None,
     )
+    # Note: Later when the generic LoadBalancingAlgorithm.HASH is implemented this attribute
+    # will also apply under that mode.
+    consistent_hashing: bool = Field(
+        description=(
+            "Only used when the `algorithm` is SRCIP or COOKIE. "
+            "Use consistent hashing to avoid redirection when servers are added/removed. "
+            "Default is False as it usually does not give a balanced distribution."
+        ),
+        default=False,
+    )
+
+    @model_validator(mode="after")
+    def validate_attributes(self) -> Self:
+        """Check that algorithm-specific configs are only set with their respective algorithm.
+
+        Raises:
+            ValueError: When validation fails in one of these cases:
+                1. self.cookie is not None when self.algorithm != COOKIE
+                2. self.consistent_hashing is True when algorithm is neither COOKIE nor SRCIP
+
+        Returns:
+            The validated model.
+        """
+        if self.cookie is not None and self.algorithm != LoadBalancingAlgorithm.COOKIE:
+            raise ValueError("cookie only applies when algorithm is COOKIE.")
+
+        if self.consistent_hashing and self.algorithm not in [
+            LoadBalancingAlgorithm.COOKIE,
+            LoadBalancingAlgorithm.SRCIP,
+        ]:
+            raise ValueError("Consistent hashing only applies when algorithm is COOKIE or SRCIP.")
+        return self
 
 
 class BandwidthLimit(BaseModel):
@@ -370,12 +452,10 @@ class Retry(BaseModel):
 
     Attributes:
         count: How many times should a request retry.
-        interval: Interval (in seconds) between retries.
         redispatch: Whether to redispatch failed requests to another server.
     """
 
     count: int = Field(description="How many times should a request retry.")
-    interval: int = Field(description="Interval (in seconds) between retries.")
     redispatch: bool = Field(
         description="Whether to redispatch failed requests to another server.", default=False
     )
@@ -429,8 +509,10 @@ class RewriteConfiguration(BaseModel):
     method: HaproxyRewriteMethod = Field(
         description="Which rewrite method to apply.One of set-path, set-query, set-header."
     )
-    expression: str = Field(description="Regular expression to use with the rewrite method.")
-    header: Optional[str] = Field(description="The name of the header to rewrite.", default=None)
+    expression: VALIDSTR = Field(description="Regular expression to use with the rewrite method.")
+    header: Optional[VALIDSTR] = Field(
+        description="The name of the header to rewrite.", default=None
+    )
 
 
 class RequirerApplicationData(_DatabagModel):
@@ -439,8 +521,12 @@ class RequirerApplicationData(_DatabagModel):
     Attributes:
         service: Name of the service requesting HAProxy routing.
         ports: List of port numbers on which the service is listening.
+        protocol: The protocol that the service speaks.
+        hosts: List of backend server addresses.
         paths: List of URL paths to route to this service. Defaults to an empty list.
-        subdomains: List of subdomains to route to this service. Defaults to an empty list.
+        hostname: Optional: The hostname of this service.
+        additional_hostnames: List of additional hostnames of this service.
+            Defaults to an empty list.
         rewrites: List of RewriteConfiguration objects defining path, query, or header
             rewrite rules.
         check: ServerHealthCheck configuration for monitoring backend health.
@@ -451,20 +537,32 @@ class RequirerApplicationData(_DatabagModel):
         deny_paths: List of URL paths that should not be routed to the backend.
         timeout: Configuration for server, client, and queue timeouts.
         server_maxconn: Optional maximum number of connections per server.
+        http_server_close: Configure server close after request.
     """
 
-    service: str = Field(description="The name of the service.")
+    service: VALIDSTR = Field(description="The name of the service.")
     ports: list[int] = Field(description="The list of ports listening for this service.")
-    paths: list[str] = Field(description="The list of paths to route to this service.", default=[])
-    subdomains: list[str] = Field(
-        description="The list of subdomains to route to this service.", default=[]
+    protocol: Optional[Literal["http", "https"]] = Field(
+        description="The protocol that the service speaks.",
+        default="http",
+    )
+    hosts: list[IPvAnyAddress] = Field(
+        description="The list of backend server addresses. Currently only support IP addresses.",
+        default=[],
+    )
+    paths: list[VALIDSTR] = Field(
+        description="The list of paths to route to this service.", default=[]
+    )
+    hostname: Optional[VALIDSTR] = Field(description="Hostname of this service.", default=None)
+    additional_hostnames: list[VALIDSTR] = Field(
+        description="The list of additional hostnames of this service.", default=[]
     )
     rewrites: list[RewriteConfiguration] = Field(
         description="The list of path rewrite rules.", default=[]
     )
-    check: ServerHealthCheck = Field(
+    check: Optional[ServerHealthCheck] = Field(
         description="Configure health check for the service.",
-        default=ServerHealthCheck(),
+        default=None,
     )
     load_balancing: LoadBalancingConfiguration = Field(
         description="Configure loadbalancing.", default=LoadBalancingConfiguration()
@@ -478,7 +576,7 @@ class RequirerApplicationData(_DatabagModel):
     retry: Optional[Retry] = Field(
         description="Configure retry for incoming requests.", default=None
     )
-    deny_paths: list[str] = Field(
+    deny_paths: list[VALIDSTR] = Field(
         description="Configure path that should not be routed to the backend", default=[]
     )
     timeout: TimeoutConfiguration = Field(
@@ -487,6 +585,9 @@ class RequirerApplicationData(_DatabagModel):
     )
     server_maxconn: Optional[int] = Field(
         description="Configure maximum connection per server", default=None
+    )
+    http_server_close: bool = Field(
+        description="Configure server close after request", default=False
     )
 
     @field_validator("load_balancing")
@@ -570,9 +671,11 @@ class HaproxyRouteRequirersData:
 
     Attributes:
         requirers_data: List of requirer data.
+        relation_ids_with_invalid_data: List of relation ids that contains invalid data.
     """
 
     requirers_data: list[HaproxyRouteRequirerData]
+    relation_ids_with_invalid_data: list[int]
 
     @model_validator(mode="after")
     def check_services_unique(self) -> Self:
@@ -688,6 +791,7 @@ class HaproxyRouteProvider(Object):
             HaproxyRouteRequirersData: Validated data from all haproxy-route requirers.
         """
         requirers_data: list[HaproxyRouteRequirerData] = []
+        relation_ids_with_invalid_data: list[int] = []
         for relation in relations:
             try:
                 application_data = self._get_requirer_application_data(relation)
@@ -708,8 +812,12 @@ class HaproxyRouteProvider(Object):
                     raise HaproxyRouteInvalidRelationDataError(
                         f"haproxy-route data validation failed for relation: {relation}"
                     ) from exc
+                relation_ids_with_invalid_data.append(relation.id)
                 continue
-        return HaproxyRouteRequirersData(requirers_data=requirers_data)
+        return HaproxyRouteRequirersData(
+            requirers_data=requirers_data,
+            relation_ids_with_invalid_data=relation_ids_with_invalid_data,
+        )
 
     def _get_requirer_units_data(self, relation: Relation) -> list[RequirerUnitData]:
         """Fetch and validate the requirer's units data.
@@ -726,7 +834,12 @@ class HaproxyRouteProvider(Object):
         requirer_units_data: list[RequirerUnitData] = []
 
         for unit in relation.units:
-            databag = relation.data[unit]
+            databag = relation.data.get(unit)
+            if not databag:
+                logger.error(
+                    "Requirer unit data does not exist even though the unit is still present."
+                )
+                continue
             try:
                 data = cast(RequirerUnitData, RequirerUnitData.load(databag))
                 requirer_units_data.append(data)
@@ -803,8 +916,11 @@ class HaproxyRouteRequirer(Object):
         relation_name: str,
         service: Optional[str] = None,
         ports: Optional[list[int]] = None,
+        protocol: Literal["http", "https"] = "http",
+        hosts: Optional[list[str]] = None,
         paths: Optional[list[str]] = None,
-        subdomains: Optional[list[str]] = None,
+        hostname: Optional[str] = None,
+        additional_hostnames: Optional[list[str]] = None,
         check_interval: Optional[int] = None,
         check_rise: Optional[int] = None,
         check_fall: Optional[int] = None,
@@ -815,12 +931,12 @@ class HaproxyRouteRequirer(Object):
         header_rewrite_expressions: Optional[list[tuple[str, str]]] = None,
         load_balancing_algorithm: LoadBalancingAlgorithm = LoadBalancingAlgorithm.LEASTCONN,
         load_balancing_cookie: Optional[str] = None,
+        load_balancing_consistent_hashing: bool = False,
         rate_limit_connections_per_minute: Optional[int] = None,
         rate_limit_policy: RateLimitPolicy = RateLimitPolicy.DENY,
         upload_limit: Optional[int] = None,
         download_limit: Optional[int] = None,
         retry_count: Optional[int] = None,
-        retry_interval: Optional[int] = None,
         retry_redispatch: bool = False,
         deny_paths: Optional[list[str]] = None,
         server_timeout: int = 60,
@@ -828,6 +944,7 @@ class HaproxyRouteRequirer(Object):
         queue_timeout: int = 60,
         server_maxconn: Optional[int] = None,
         unit_address: Optional[str] = None,
+        http_server_close: bool = False,
     ) -> None:
         """Initialize the HaproxyRouteRequirer.
 
@@ -836,8 +953,11 @@ class HaproxyRouteRequirer(Object):
             relation_name: The name of the relation to bind to.
             service: The name of the service to route traffic to.
             ports: List of ports the service is listening on.
+            protocol: The protocol that the service speaks.
+            hosts: List of backend server addresses. Currently only support IP addresses.
             paths: List of URL paths to route to this service.
-            subdomains: List of subdomains to route to this service.
+            hostname: Hostname of this service.
+            additional_hostnames: Additional hostnames of this service.
             check_interval: Interval between health checks in seconds.
             check_rise: Number of successful health checks before server is considered up.
             check_fall: Number of failed health checks before server is considered down.
@@ -849,12 +969,12 @@ class HaproxyRouteRequirer(Object):
                 and rewrite expression.
             load_balancing_algorithm: Algorithm to use for load balancing.
             load_balancing_cookie: Cookie name to use when algorithm is set to cookie.
+            load_balancing_consistent_hashing: Whether to use consistent hashing.
             rate_limit_connections_per_minute: Maximum connections allowed per minute.
             rate_limit_policy: Policy to apply when rate limit is reached.
             upload_limit: Maximum upload bandwidth in bytes per second.
             download_limit: Maximum download bandwidth in bytes per second.
             retry_count: Number of times to retry failed requests.
-            retry_interval: Interval between retries in seconds.
             retry_redispatch: Whether to redispatch failed requests to another server.
             deny_paths: List of paths that should not be routed to the backend.
             server_timeout: Timeout for requests from haproxy to backend servers in seconds.
@@ -862,6 +982,7 @@ class HaproxyRouteRequirer(Object):
             queue_timeout: Timeout for requests waiting in queue in seconds.
             server_maxconn: Maximum connections per server.
             unit_address: IP address of the unit (if not provided, will use binding address).
+            http_server_close: Configure server close after request.
         """
         super().__init__(charm, relation_name)
 
@@ -874,8 +995,11 @@ class HaproxyRouteRequirer(Object):
         self._application_data = self._generate_application_data(
             service,
             ports,
+            protocol,
+            hosts,
             paths,
-            subdomains,
+            hostname,
+            additional_hostnames,
             check_interval,
             check_rise,
             check_fall,
@@ -886,18 +1010,19 @@ class HaproxyRouteRequirer(Object):
             header_rewrite_expressions,
             load_balancing_algorithm,
             load_balancing_cookie,
+            load_balancing_consistent_hashing,
             rate_limit_connections_per_minute,
             rate_limit_policy,
             upload_limit,
             download_limit,
             retry_count,
-            retry_interval,
             retry_redispatch,
             deny_paths,
             server_timeout,
             connect_timeout,
             queue_timeout,
             server_maxconn,
+            http_server_close,
         )
         self._unit_address = unit_address
 
@@ -925,8 +1050,11 @@ class HaproxyRouteRequirer(Object):
         self,
         service: str,
         ports: list[int],
+        protocol: Literal["http", "https"] = "http",
+        hosts: Optional[list[str]] = None,
         paths: Optional[list[str]] = None,
-        subdomains: Optional[list[str]] = None,
+        hostname: Optional[str] = None,
+        additional_hostnames: Optional[list[str]] = None,
         check_interval: Optional[int] = None,
         check_rise: Optional[int] = None,
         check_fall: Optional[int] = None,
@@ -937,26 +1065,31 @@ class HaproxyRouteRequirer(Object):
         header_rewrite_expressions: Optional[list[tuple[str, str]]] = None,
         load_balancing_algorithm: LoadBalancingAlgorithm = LoadBalancingAlgorithm.LEASTCONN,
         load_balancing_cookie: Optional[str] = None,
+        load_balancing_consistent_hashing: bool = False,
         rate_limit_connections_per_minute: Optional[int] = None,
         rate_limit_policy: RateLimitPolicy = RateLimitPolicy.DENY,
         upload_limit: Optional[int] = None,
         download_limit: Optional[int] = None,
         retry_count: Optional[int] = None,
-        retry_interval: Optional[int] = None,
         retry_redispatch: bool = False,
         deny_paths: Optional[list[str]] = None,
         server_timeout: int = 60,
         connect_timeout: int = 60,
         queue_timeout: int = 60,
         server_maxconn: Optional[int] = None,
+        unit_address: Optional[str] = None,
+        http_server_close: bool = False,
     ) -> None:
         """Update haproxy-route requirements data in the relation.
 
         Args:
             service: The name of the service to route traffic to.
             ports: List of ports the service is listening on.
+            protocol: The protocol that the serive speaks, deafults to "http".
+            hosts: List of backend server addresses. Currently only support IP addresses.
             paths: List of URL paths to route to this service.
-            subdomains: List of subdomains to route to this service.
+            hostname: Hostname of this service.
+            additional_hostnames: Additional hostnames of this service.
             check_interval: Interval between health checks in seconds.
             check_rise: Number of successful health checks before server is considered up.
             check_fall: Number of failed health checks before server is considered down.
@@ -968,24 +1101,30 @@ class HaproxyRouteRequirer(Object):
                 and rewrite expression.
             load_balancing_algorithm: Algorithm to use for load balancing.
             load_balancing_cookie: Cookie name to use when algorithm is set to cookie.
+            load_balancing_consistent_hashing: Whether to use consistent hashing.
             rate_limit_connections_per_minute: Maximum connections allowed per minute.
             rate_limit_policy: Policy to apply when rate limit is reached.
             upload_limit: Maximum upload bandwidth in bytes per second.
             download_limit: Maximum download bandwidth in bytes per second.
             retry_count: Number of times to retry failed requests.
-            retry_interval: Interval between retries in seconds.
             retry_redispatch: Whether to redispatch failed requests to another server.
             deny_paths: List of paths that should not be routed to the backend.
             server_timeout: Timeout for requests from haproxy to backend servers in seconds.
             connect_timeout: Timeout for client requests to haproxy in seconds.
             queue_timeout: Timeout for requests waiting in queue in seconds.
             server_maxconn: Maximum connections per server.
+            unit_address: IP address of the unit (if not provided, will use binding address).
+            http_server_close: Configure server close after request.
         """
+        self._unit_address = unit_address
         self._application_data = self._generate_application_data(
             service,
             ports,
+            protocol,
+            hosts,
             paths,
-            subdomains,
+            hostname,
+            additional_hostnames,
             check_interval,
             check_rise,
             check_fall,
@@ -996,18 +1135,19 @@ class HaproxyRouteRequirer(Object):
             header_rewrite_expressions,
             load_balancing_algorithm,
             load_balancing_cookie,
+            load_balancing_consistent_hashing,
             rate_limit_connections_per_minute,
             rate_limit_policy,
             upload_limit,
             download_limit,
             retry_count,
-            retry_interval,
             retry_redispatch,
             deny_paths,
             server_timeout,
             connect_timeout,
             queue_timeout,
             server_maxconn,
+            http_server_close,
         )
         self.update_relation_data()
 
@@ -1016,8 +1156,11 @@ class HaproxyRouteRequirer(Object):
         self,
         service: Optional[str] = None,
         ports: Optional[list[int]] = None,
+        protocol: Literal["http", "https"] = "http",
+        hosts: Optional[list[str]] = None,
         paths: Optional[list[str]] = None,
-        subdomains: Optional[list[str]] = None,
+        hostname: Optional[str] = None,
+        additional_hostnames: Optional[list[str]] = None,
         check_interval: Optional[int] = None,
         check_rise: Optional[int] = None,
         check_fall: Optional[int] = None,
@@ -1028,26 +1171,30 @@ class HaproxyRouteRequirer(Object):
         header_rewrite_expressions: Optional[list[tuple[str, str]]] = None,
         load_balancing_algorithm: LoadBalancingAlgorithm = LoadBalancingAlgorithm.LEASTCONN,
         load_balancing_cookie: Optional[str] = None,
+        load_balancing_consistent_hashing: bool = False,
         rate_limit_connections_per_minute: Optional[int] = None,
         rate_limit_policy: RateLimitPolicy = RateLimitPolicy.DENY,
         upload_limit: Optional[int] = None,
         download_limit: Optional[int] = None,
         retry_count: Optional[int] = None,
-        retry_interval: Optional[int] = None,
         retry_redispatch: bool = False,
         deny_paths: Optional[list[str]] = None,
         server_timeout: int = 60,
         connect_timeout: int = 60,
         queue_timeout: int = 60,
         server_maxconn: Optional[int] = None,
+        http_server_close: bool = False,
     ) -> dict[str, Any]:
         """Generate the complete application data structure.
 
         Args:
             service: The name of the service to route traffic to.
             ports: List of ports the service is listening on.
+            protocol: The protocol that the service speaks.
+            hosts: List of backend server addresses. Currently only support IP addresses.
             paths: List of URL paths to route to this service.
-            subdomains: List of subdomains to route to this service.
+            hostname: Hostname of this service.
+            additional_hostnames: Additional hostnames of this service.
             check_interval: Interval between health checks in seconds.
             check_rise: Number of successful health checks before server is considered up.
             check_fall: Number of failed health checks before server is considered down.
@@ -1059,18 +1206,19 @@ class HaproxyRouteRequirer(Object):
                 rewrite expression.
             load_balancing_algorithm: Algorithm to use for load balancing.
             load_balancing_cookie: Cookie name to use when algorithm is set to cookie.
+            load_balancing_consistent_hashing: Whether to use consistent hashing.
             rate_limit_connections_per_minute: Maximum connections allowed per minute.
             rate_limit_policy: Policy to apply when rate limit is reached.
             upload_limit: Maximum upload bandwidth in bytes per second.
             download_limit: Maximum download bandwidth in bytes per second.
             retry_count: Number of times to retry failed requests.
-            retry_interval: Interval between retries in seconds.
             retry_redispatch: Whether to redispatch failed requests to another server.
             deny_paths: List of paths that should not be routed to the backend.
             server_timeout: Timeout for requests from haproxy to backend servers in seconds.
             connect_timeout: Timeout for client requests to haproxy in seconds.
             queue_timeout: Timeout for requests waiting in queue in seconds.
             server_maxconn: Maximum connections per server.
+            http_server_close: Configure server close after request.
 
         Returns:
             dict: A dictionary containing the complete application data structure.
@@ -1078,10 +1226,12 @@ class HaproxyRouteRequirer(Object):
         # Apply default value to list parameters to avoid problems with mutable default args.
         if not ports:
             ports = []
+        if not hosts:
+            hosts = []
         if not paths:
             paths = []
-        if not subdomains:
-            subdomains = []
+        if not additional_hostnames:
+            additional_hostnames = []
         if not path_rewrite_expressions:
             path_rewrite_expressions = []
         if not query_rewrite_expressions:
@@ -1094,11 +1244,15 @@ class HaproxyRouteRequirer(Object):
         application_data: dict[str, Any] = {
             "service": service,
             "ports": ports,
+            "protocol": protocol,
+            "hosts": hosts,
             "paths": paths,
-            "subdomains": subdomains,
+            "hostname": hostname,
+            "additional_hostnames": additional_hostnames,
             "load_balancing": {
                 "algorithm": load_balancing_algorithm,
                 "cookie": load_balancing_cookie,
+                "consistent_hashing": load_balancing_consistent_hashing,
             },
             "timeout": {
                 "server": server_timeout,
@@ -1116,6 +1270,7 @@ class HaproxyRouteRequirer(Object):
                 query_rewrite_expressions,
                 header_rewrite_expressions,
             ),
+            "http_server_close": http_server_close,
         }
 
         if check := self._generate_server_healthcheck_configuration(
@@ -1128,9 +1283,7 @@ class HaproxyRouteRequirer(Object):
         ):
             application_data["rate_limit"] = rate_limit
 
-        if retry := self._generate_retry_configuration(
-            retry_count, retry_interval, retry_redispatch
-        ):
+        if retry := self._generate_retry_configuration(retry_count, retry_redispatch):
             application_data["retry"] = retry
         return application_data
 
@@ -1222,23 +1375,21 @@ class HaproxyRouteRequirer(Object):
         return rate_limit_configuration
 
     def _generate_retry_configuration(
-        self, count: Optional[int], interval: Optional[int], redispatch: bool
+        self, count: Optional[int], redispatch: bool
     ) -> dict[str, Any]:
         """Generate retry configuration.
 
         Args:
             count: Number of times to retry failed requests.
-            interval: Interval between retries in seconds.
             redispatch: Whether to redispatch failed requests to another server.
 
         Returns:
             dict[str, Any]: Retry configuration dictionary, or empty dict if retry not configured.
         """
         retry_configuration = {}
-        if count and interval:
+        if count:
             retry_configuration = {
                 "count": count,
-                "interval": interval,
                 "redispatch": redispatch,
             }
         return retry_configuration
