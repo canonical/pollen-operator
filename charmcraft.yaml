@@ -28,4 +28,4 @@ parts:
       "*.conf*": files/
 charm-libs:
   - lib: haproxy.haproxy_route
-    version: "0"
+    version: "1"
