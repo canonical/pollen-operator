@@ -2,8 +2,6 @@
 # See LICENSE file for licensing details.
 
 """Pollen charm business logic."""
-from typing_inspection.typing_objects import DEPRECATED_ALIASES
-
 import glob
 from pathlib import Path
 
@@ -14,7 +12,6 @@ from charms.operator_libs_linux.v2 import snap
 from charm_state import HTTP_PORT
 from exceptions import ConfigurationWriteError, InstallError
 
-# This will be changed to 'pollen' once the upstream snap location is updated.
 OLD_SNAP_NAME = "gtrkiller-pollen"
 SNAP_NAME = "pollen"
 RNG_FILE_VALUE = 'RNGDOPTIONS="--fill-watermark=90% --feed-interval=1"'
@@ -33,6 +30,7 @@ class PollenService:
             InstallError: if the snap fails to install
             ConfigurationWriteError: something went wrong writing the configuration
         """
+        # Ensure that the old snap is not installed.
         snap.remove(OLD_SNAP_NAME)
         try:
             snap.add(SNAP_NAME, channel="stable")
