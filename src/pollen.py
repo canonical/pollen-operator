@@ -14,7 +14,7 @@ from charm_state import HTTP_PORT
 from exceptions import ConfigurationWriteError, InstallError
 
 # This will be changed to 'pollen' once the upstream snap location is updated.
-SNAP_NAME = "gtrkiller-pollen"
+SNAP_NAME = "pollen"
 RNG_FILE_VALUE = 'RNGDOPTIONS="--fill-watermark=90% --feed-interval=1"'
 
 
@@ -32,7 +32,7 @@ class PollenService:
             ConfigurationWriteError: something went wrong writing the configuration
         """
         try:
-            snap.add(SNAP_NAME, channel="candidate")
+            snap.add(SNAP_NAME, channel="stable")
         except snap.SnapError as exc:
             raise InstallError from exc
         unit_name = unit_name.replace("/", "-")
