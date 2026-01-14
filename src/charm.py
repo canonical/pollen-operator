@@ -83,6 +83,7 @@ class PollenOperatorCharm(ops.CharmBase):
         """
         self.unit.status = MaintenanceStatus("Upgrading dependencies")
         self.pollen.prepare(self.unit.name)
+        self.pollen.start()
         self.unit.status = ActiveStatus()
 
     def _on_start(self, event: ops.StartEvent):
