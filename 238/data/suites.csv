@@ -1,0 +1,16 @@
+"DESCRIPTION","DURATION IN MS","NAME","PARENT SUITE","START TIME","STATUS","STOP TIME","SUB SUITE","SUITE","TEST CLASS","TEST METHOD"
+"
+    arrange: given charm has been built, deployed and related
+    act: get the relation data from the charm.
+    assert: the relation data has the fields hostname and port as expected.
+    ","3039","test_website_relation","tests.integration","2026-01-17","passed","2026-01-17","","test_charm","",""
+"
+    arrange: given charm has been built, deployed and related to a dependent application
+    act: when the status is checked
+    assert: then the workload status is active.
+    ","0","test_active","tests.integration","2026-01-17","passed","2026-01-17","","test_charm","",""
+"
+    arrange: given charm in its initial state
+    act: when the metrics endpoint is scraped
+    assert: the response is 200 (HTTP OK)
+    ","1021","test_prom_metrics_are_up","tests.integration","2026-01-17","passed","2026-01-17","","test_charm","",""
