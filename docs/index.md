@@ -3,7 +3,7 @@ Pollen is a scalable, high performance, free software (AGPL) web server, that pr
 You might think of this as ‘Entropy-as-a-Service’.
 
 [Pollinate](https://github.com/dustinkirkland/pollinate) is a free software (GPLv3) script that retrieves entropy from one or more Pollen servers and seeds the local Pseudo Random Number Generator (PRNG).
-You might think of this as PRNG-seeding via Entropy-as-a-Service.
+You might think of this as PRNG-seeding using Entropy-as-a-Service.
 
 This charm simplifies initial deployment and operations of Pollen on a machine, such as scaling the number of instances and clustering and more.
 As such, the charm makes it easy for those looking to take control of their own entropy generation whilst keeping operations simple.
