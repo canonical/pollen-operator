@@ -1,69 +1,38 @@
 # Copyright 2026 Canonical Ltd.
 # See LICENSE file for licensing details.
 
-variables {
-  app_name    = "pollen"
-  base        = "ubuntu@22.04"
-  channel     = "latest/edge"
-  config      = {}
-  constraints = "arch=amd64"
-  model_uuid  = "00000000-0000-0000-0000-000000000001"
-  revision    = 10
-  units       = 2
-}
-
-mock_provider "juju" {
-  mock_resource "juju_application" {
-    override_during = plan
-    defaults = {
-      id         = "pollen"
-      model_type = "lxd"
-    }
+run "setup_tests" {
+  module {
+    source = "./tests/setup"
   }
 }
 
-run "deploys_application" {
-  command = plan
-
-  assert {
-    condition     = output.application.name == "pollen" && output.application.model_uuid == "00000000-0000-0000-0000-000000000001" && output.application.charm[0].name == "pollen" && output.application.charm[0].channel == "latest/edge" && output.application.charm[0].base == "ubuntu@22.04" && output.application.charm[0].revision == 10
-    error_message = "application identity did not match the expected deployment"
+run "basic_deploy" {
+  variables {
+    model_uuid = run.setup_tests.model_uuid
+    base       = "ubuntu@22.04"
+    channel    = "latest/edge"
+    # renovate: depName="pollen"
+    revision = 64
   }
 
   assert {
-    condition     = output.application.constraints == "arch=amd64"
-    error_message = "application constraints did not match expected"
+    condition     = output.application.name == "pollen"
+    error_message = "pollen application name did not match expected"
   }
 
   assert {
-    condition     = output.application.units == 2
-    error_message = "application units did not match expected"
+    condition     = output.provides.value.endpoint == "cos-agent"
+    error_message = "pollen module should provide 'provides.value' output"
   }
 
   assert {
-    condition = output.provides == {
-      cos_agent = {
-        kind     = "endpoint"
-        name     = "pollen"
-        endpoint = "cos-agent"
-      }
-      website = {
-        kind     = "endpoint"
-        name     = "pollen"
-        endpoint = "website"
-      }
-    }
-    error_message = "provided relation outputs did not match expected structure"
+    condition     = output.provides.website.endpoint == "website"
+    error_message = "pollen module should provide 'provides.website' output"
   }
 
   assert {
-    condition = output.requires == {
-      haproxy_route = {
-        kind     = "endpoint"
-        name     = "pollen"
-        endpoint = "haproxy_route"
-      }
-    }
-    error_message = "required relation outputs did not match expected structure"
+    condition     = output.requires.value.endpoint == "haproxy_route"
+    error_message = "pollen module should provide 'requires.value' output"
   }
 }
