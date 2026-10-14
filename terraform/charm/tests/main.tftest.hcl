@@ -22,8 +22,8 @@ run "basic_deploy" {
   }
 
   assert {
-    condition     = output.provides.value.endpoint == "cos-agent"
-    error_message = "pollen module should provide 'provides.value' output"
+    condition     = output.provides.cos_agent.endpoint == "cos-agent"
+    error_message = "pollen module should provide 'provides.cos_agent' output"
   }
 
   assert {
@@ -32,7 +32,7 @@ run "basic_deploy" {
   }
 
   assert {
-    condition     = output.requires.value.endpoint == "haproxy_route"
-    error_message = "pollen module should provide 'requires.value' output"
+    condition     = output.requires.haproxy_route.endpoint == "haproxy_route"
+    error_message = "pollen module should provide 'requires.haproxy_route' output"
   }
 }
