@@ -29,4 +29,5 @@ header:
       - '**/.gitkeep'
       - 'src/prometheus_alert_rules/pollen_missing.rule'
       - 'uv.lock'
+      - '**/MAJOR_VERSION'
     comment: on-failure
