@@ -15,10 +15,6 @@ You might think of this as ‘Entropy-as-a-Service’.
 Pollen can be used by `Pollinate <https://github.com/dustinkirkland/pollinate>`_, a free software (GPLv3) script that retrieves entropy from one or more Pollen servers and seeds the local Pseudo Random Number Generator (PRNG).
 
 Like any Juju charm, this charm supports one-line deployment, configuration, integration, scaling, and more.
-For Charmed Pollen, this includes:
-
-- Scaling
-
 This charm simplifies initial deployment and operations of Pollen on a machine, such as scaling the number of instances and clustering and more.
 As such, the charm makes it easy for those looking to take control of their own entropy generation whilst keeping operations simple.
 

@@ -118,7 +118,7 @@ The output should be similar to the following:
     Machine  State    Address         Inst id        Base          AZ           Message
     0        started  10.240.160.234  juju-9389b4-0  ubuntu@22.04  work-laptop  Running
 
-When the status shows "Active" for both the charm, the deployment is considered finished.
+When the status shows "Active" for the charm, the deployment is considered finished.
 
 Obtain entropy from Pollen using Pollinate
 ------------------------------------------
@@ -149,7 +149,7 @@ See the "client successfully seeded" in the output to confirm that Pollen is wor
 Clean up the environment
 ------------------------
 
-Congratulations! You successfully...
+Congratulations! You successfully deployed the Pollen charm, examined its status, and obtained entropy from the charm using Pollinate.
 
 You can clean up your environment by following this guide:
 `Tear down your test environment <https://documentation.ubuntu.com/juju/3.6/howto/manage-your-juju-deployment/tear-down-your-juju-deployment-local-testing-and-development/>`_
