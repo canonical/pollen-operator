@@ -12,12 +12,9 @@ In this tutorial, we will deploy Pollen in our test environment and obtains some
 What you'll do
 --------------
 
-.. TODO: Add numbered list of steps outlining what happens in this tutorial.
-   Example:
-
-    1. Deploy the Pollen charm
-    2. Obtain entropy from Pollen using Pollinate
-    3. Clean up the environment
+1. Deploy the Pollen charm
+2. Obtain entropy from Pollen using Pollinate
+3. Clean up the environment
 
 What you'll need
 ----------------
@@ -144,7 +141,7 @@ Once installed, you can use Pollinate to test the Pollen server. The Pollen addr
     ������N�좍�}�y���?��5sJ���8Q�6���k��&�����"2Yi.C9<13>Nov 18 13:20:43 pollinate[15489]: client hashed response from [http://10.240.160.234:8080]
     <13>Nov 18 13:20:43 pollinate[15489]: client successfully seeded [-]
 
-See the "client successfully seeded" in the output to confirm that Pollen is working normally.
+You can learn more about the Pollen protocol (challenge/response) in the :ref:`Pollen protocol explanation <explanation_pollen_protocol>`. See the "client successfully seeded" in the output to confirm that Pollen is working normally, here we are using the test mode of Pollinate, but in real situations, Pollinate will inject the entropy obtained from the Pollen server into system's entropy pool to make it more unpredictable in a process called seeding.
 
 Clean up the environment
 ------------------------

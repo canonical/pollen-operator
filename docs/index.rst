@@ -21,32 +21,6 @@ As such, the charm makes it easy for those looking to take control of their own 
 In this documentation
 ---------------------
 
-.. TODO: Use the table below as a starting place.
-   You don't need to include all of the rows if they're not relevant to the charm
-   or if the docs don't exist. Use the vertical line symbol | to separate pages.
-   
-   When linking a how-to guide, use a verb to indicate an action/task. When
-   linking reference or explanation material, use gerunds or nouns.
-
-   Use "Get started" to highlight one or more tutorials. This row touches
-   on the "point of entry" domain.
-
-   For Deployment and Operations, place the most important/common use cases first.
-   If there are no meaningful Day 0/1 operations, drop "Deployment" from the table.
-   If there are no meaningful Day 2 operations, drop "Operations" from the table.
-   These rows touch on the domain of "lifecycle".
-   
-   Use the "Product-specific feature" row to highlight any 
-   major selling points of the charm -- what's the value proposition of this charm?
-
-   Use the "Design" row to showcase architecture and design-related documentation
-   for this charm. This row touches on the domain of "conceptual or stack layers".
-   
-   If possible, include a row that touches on the "quality" domain (security, performance).
-
-   Another charm-specific row to consider is "Integrations", especially if the
-   charm is meant to work in the context of a larger deployment. The "Integrations"
-   row touches on the domain of "interfaces".
 
 .. list-table::
     :header-rows: 1
@@ -58,7 +32,7 @@ In this documentation
     * - Operations
       - :doc:`Integrate with COS <how-to/relate-to-cos>` | :doc:`Upgrade <how-to/upgrade>`
     * - Design
-      - :doc:`Architecture <reference/charm-architecture>`
+      - :doc:`Architecture <reference/charm-architecture>` | :ref:`Pollen protocol <explanation_pollen_protocol>`
 
 How this documentation is organized
 ------------------------------------
